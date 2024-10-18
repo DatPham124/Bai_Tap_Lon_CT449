@@ -1,6 +1,6 @@
 const { ObjectID, ReturnDocument, ObjectId } = require("mongodb");
 
-class BooksService {
+class Books_Service {
   constructor(client) {
     this.Books = client.db().collection("Books");
   }
@@ -72,4 +72,4 @@ class BooksService {
   }
 }
 
-module.exports = BooksService;
+module.exports = Books_Service;

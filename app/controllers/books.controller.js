@@ -5,7 +5,7 @@ const ApiError = require("../api-error");
 // Hàm để xử lý khi tạo sách mới
 exports.create = async (req, res, next) => {
   if (!req.body?.title) {
-    return next(new ApiError(400, "Title can not be empty")); // Sửa 'name' thành 'title'
+    return next(new ApiError(400, "Title can not be empty"));
   }
 
   try {
