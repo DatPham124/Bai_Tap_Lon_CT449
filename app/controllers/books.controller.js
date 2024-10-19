@@ -58,7 +58,7 @@ exports.getById = async (req, res, next) => {
 };
 
 // Hàm để cập nhật thông tin một cuốn sách
-exports.update = async (req, res) => {
+exports.update = async (req, res, next) => {
   if (Object.keys(req.body).length === 0) {
     return next(new ApiError(400, "Data to update can not be empty"));
   }
@@ -87,7 +87,7 @@ exports.update = async (req, res) => {
 };
 
 // Hàm để xóa một cuốn sách
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
   try {
     const bookService = new BooksService(MongoDB.client);
     const document = await bookService.delete(req.params.id);

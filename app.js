@@ -16,13 +16,13 @@ app.get("/", (req, res) => {
   res.json({ message: "Chay oi nhe" });
 });
 
-app.use("/api/books", booksRouter);
+app.use("/api/book", booksRouter);
 
-app.use("/api/borrows", borrowsRouter);
+app.use("/api/borrow", borrowsRouter);
 
 app.use("/api/staff", staffRouter);
 
-app.use("/api/users", usersRouter);
+app.use("/api/user", usersRouter);
 
 app.use("/api/auth", authRouter);
 
