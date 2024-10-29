@@ -4,18 +4,17 @@ const ApiError = require("../api-error");
 
 // Hàm để xử lý khi tạo sách mới
 exports.create = async (req, res, next) => {
-  if (!req.body?.title) {
-    return next(new ApiError(400, "Title can not be empty"));
+  if (!req.body?.SACH_Ten) {
+    return next(new ApiError(400, "Book title can not be empty"));
   }
 
   try {
-    const booksService = new BooksService(MongoDB.client); // Sửa 'ContactService' thành 'BooksService'
+    const booksService = new BooksService(MongoDB.client);
     const document = await booksService.create(req.body);
     return res.send(document);
   } catch (error) {
-    return next(
-      new ApiError(500, "An error occurred while creating the book") // Sửa 'contact' thành 'book'
-    );
+    console.log(error);
+    return next(new ApiError(500, "An error occurred while creating the book"));
   }
 };
 
@@ -25,10 +24,10 @@ exports.getAll = async (req, res, next) => {
 
   try {
     const booksService = new BooksService(MongoDB.client);
-    const { title } = req.query;
+    const { SACH_Ten } = req.query;
 
-    if (title) {
-      documents = await booksService.findByTitle(title);
+    if (SACH_Ten) {
+      documents = await booksService.findByTitle(SACH_Ten);
     } else {
       documents = await booksService.find({});
     }
@@ -64,8 +63,8 @@ exports.update = async (req, res, next) => {
   }
 
   try {
-    const bookService = new BooksService(MongoDB.client);
-    const document = await bookService.update(req.params.id, req.body);
+    const booksService = new BooksService(MongoDB.client);
+    const document = await booksService.update(req.params.id, req.body);
 
     if (!document) {
       console.error(`Book with ID ${req.params.id} not found`);
@@ -89,10 +88,10 @@ exports.update = async (req, res, next) => {
 // Hàm để xóa một cuốn sách
 exports.delete = async (req, res, next) => {
   try {
-    const bookService = new BooksService(MongoDB.client);
-    const document = await bookService.delete(req.params.id);
+    const booksService = new BooksService(MongoDB.client);
+    const document = await booksService.delete(req.params.id);
     if (!document) {
-      return next(new ApiError(404, "book not found"));
+      return next(new ApiError(404, "Book not found"));
     }
     return res.send({ message: "Book was deleted successfully" });
   } catch (error) {
