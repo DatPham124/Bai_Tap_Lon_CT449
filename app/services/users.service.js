@@ -11,7 +11,6 @@ class UsersService {
       email: payload.email,
       phone: payload.phone,
       address: payload.address,
-      role: payload.role || "user", // Nếu không có role, mặc định là "user"
     };
 
     // Xóa các trường undefined

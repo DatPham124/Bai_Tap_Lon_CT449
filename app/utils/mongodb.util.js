@@ -6,6 +6,15 @@ class MongoDB {
     this.client = await MongoClient.connect(uri);
     return this.client;
   };
+
+  static getClient = () => {
+    if (!this.client) {
+      throw new Error(
+        "Database connection not established. Call connect first."
+      );
+    }
+    return this.client; // Trả về client nếu đã kết nối
+  };
 }
 
 module.exports = MongoDB;

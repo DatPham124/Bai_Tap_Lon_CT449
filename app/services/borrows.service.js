@@ -1,37 +1,54 @@
-// const { ObjectID, ReturnDocument, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
-// class Borrow_Service {
-//   constructor(client) {
-//     this.Borrow = client.db().collection("Borrows");
-//   }
+class BorrowService {
+  constructor(client) {
+    this.borrowCollection = client.db().collection("Borrows");
+  }
 
-//   extractBorrowData(payload) {
-//     const borrow = {
-//       borrowerId: payload.borrowerId, // ID người mượn
-//       bookId:
-//       userId:
-//       borrowDate: payload.borrowDate || new Date(), // Ngày mượn
-//       returnDate: payload.returnDate, // Ngày trả dự kiến
-//       staffId:
-//     };
+  async create(borrowData) {
+    const result = await this.borrowCollection.insertOne(borrowData);
+    return result; // Trả về bản ghi vừa thêm
+  }
 
-//     // Loại bỏ các trường undefined
-//     Object.keys(borrow).forEach(
-//       (key) => borrow[key] === undefined && delete borrow[key]
-//     );
-//     return borrow;
-//   }
+  async find(filter) {
+    const cursor = await this.borrowCollection.find(filter);
+    return await cursor.toArray();
+  }
 
-//   async create(payload) {
-//     const borrow = this.extractBorrowData(payload);
+  async findById(id) {
+    if (!ObjectId.isValid(id)) {
+      return null; // Trả về null nếu ID không hợp lệ
+    }
 
-//     const result = await this.Borrow.findOneAndUpdate(
-//       { borrowerId: borrow.borrowerId, bookId: borrow.bookId },
-//       { $set: borrow },
-//       { returnDocument: ReturnDocument.AFTER, upsert: true } // Nếu không tìm thấy, sẽ tạo mới
-//     );
-//     return result.value;
-//   }
-// }
+    // Nếu ID hợp lệ, tiến hành truy vấn MongoDB
+    return await this.borrowCollection.findOne({
+      _id: new ObjectId(id),
+    });
+  }
 
-// module.exports = Borrow_Service;
+  async update(id, payload) {
+    const filter = {
+      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+    };
+
+    if (!filter._id) {
+      return null;
+    }
+    const update = payload;
+    const result = await this.borrowCollection.findOneAndUpdate(
+      filter,
+      { $set: update },
+      { returnDocument: "after" }
+    );
+    return result.value;
+  }
+
+  async delete(id) {
+    const result = await this.borrowCollection.findOneAndDelete({
+      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+    });
+    return result;
+  }
+}
+
+module.exports = BorrowService;
