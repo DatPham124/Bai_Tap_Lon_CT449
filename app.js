@@ -6,6 +6,7 @@ const borrowsRouter = require("./app/routes/borrows.route");
 const staffRouter = require("./app/routes/staff.route");
 const usersRouter = require("./app/routes/users.route");
 const authRouter = require("./app/routes/auth.route");
+const pubRouter = require("./app/routes/pub.route");
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.use("/api/staff", staffRouter);
 app.use("/api/user", usersRouter);
 
 app.use("/api/auth", authRouter);
+
+app.use("/api/pub", pubRouter);
 
 app.use((req, res, next) => {
   // Code o day se chay khi khong co route duoc dinh nghia nao
