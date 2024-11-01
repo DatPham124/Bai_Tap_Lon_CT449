@@ -1,4 +1,4 @@
-const { ObjectId, ReturnDocument } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 class Books_Service {
   constructor(client) {
@@ -8,13 +8,15 @@ class Books_Service {
 
   extractBookData(payload) {
     const book = {
-      SACH_Ma: payload.SACH_Ma,
-      SACH_Ten: payload.SACH_Ten,
-      SACH_SoQuyen: payload.SACH_SoQuyen,
-      SACH_NamXuatBan: payload.SACH_NamXuatBan,
-      SACH_TacGia: payload.SACH_TacGia,
-      SACH_HinhAnh: payload.SACH_HinhAnh,
-      NXB_Ma: payload.NXB_Ma ? new ObjectId(payload.NXB_Ma) : undefined, // Thêm tham chiếu đến nhà xuất bản
+      bookId: payload.bookId, // Mã sách
+      bookName: payload.bookName, // Tên sách
+      numberOfCopies: payload.numberOfCopies, // Số lượng quyền sách
+      publicationYear: payload.publicationYear, // Năm xuất bản
+      author: payload.author, // Tác giả
+      coverImage: payload.coverImage, // Hình ảnh bìa sách
+      publisherId: payload.publisherId
+        ? new ObjectId(payload.publisherId)
+        : undefined, // Mã nhà xuất bản
     };
 
     Object.keys(book).forEach(
@@ -27,11 +29,11 @@ class Books_Service {
     const book = this.extractBookData(payload);
 
     const result = await this.Books.findOneAndUpdate(
-      { SACH_Ma: book.SACH_Ma, SACH_Ten: book.SACH_Ten },
+      { bookId: book.bookId, bookName: book.bookName },
       { $set: book },
-      { returnDocument: ReturnDocument.AFTER, upsert: true }
+      { returnDocument: "after", upsert: true }
     );
-    return result;
+    return result.value;
   }
 
   async find(filter) {
@@ -53,7 +55,7 @@ class Books_Service {
 
   async findByTitle(name) {
     return await this.find({
-      SACH_Ten: { $regex: new RegExp(name, "i") },
+      bookName: { $regex: new RegExp(name, "i") },
     });
   }
 
@@ -86,25 +88,24 @@ class Books_Service {
     const result = await this.Books.findOneAndUpdate(
       filter,
       { $set: update },
-      { returnDocument: ReturnDocument.AFTER }
+      { returnDocument: "after" }
     );
 
-    // Lấy thông tin nhà xuất bản nếu tồn tại publisherId
-    if (result && result.publisherId) {
+    if (result.value && result.value.publisherId) {
       const publisher = await this.Publishers.findOne({
-        _id: result.publisherId,
+        _id: result.value.publisherId,
       });
-      result.publisherDetails = publisher || null;
+      result.value.publisherDetails = publisher || null;
     }
 
-    return result;
+    return result.value;
   }
 
   async delete(id) {
     const result = await this.Books.findOneAndDelete({
       _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
     });
-    return result;
+    return result.value;
   }
 }
 

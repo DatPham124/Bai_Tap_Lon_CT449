@@ -6,6 +6,7 @@ class BorrowService {
   async getAll() {
     return (await this.api.get("/")).data;
   }
+
   async create(data) {
     return (await this.api.post("/", data)).data;
   }
@@ -18,5 +19,10 @@ class BorrowService {
   async delete(id) {
     return (await this.api.delete(`/${id}`)).data;
   }
+
+  async getBorrowsWithDetails(id) {
+    return (await this.api.get(`/getBook/${id}`)).data;
+  }
 }
+
 export default new BorrowService();

@@ -10,4 +10,5 @@ router
   .put(borrows.update)
   .delete(borrows.delete);
 
+router.route("/getBook/:id").get(borrows.getBorrowsWithDetails);
 module.exports = router;

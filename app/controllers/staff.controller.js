@@ -3,8 +3,8 @@ const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
 exports.create = async (req, res, next) => {
-  if (!req.body?.first_name || !req.body?.last_name) {
-    return next(new ApiError(400, "First name and last name can not be empty")); // Kiểm tra tên
+  if (!req.body?.name) {
+    return next(new ApiError(400, "Name can not be empty")); // Kiểm tra tên
   }
 
   try {

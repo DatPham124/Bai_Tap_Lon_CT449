@@ -1,45 +1,51 @@
 <template>
     <div>
-        <h1>Danh sách mượn, trả</h1>
-        <ul v-if="borrows.length > 0">
+        <h1>Danh sách Mượn Trả</h1>
+        <ul>
             <li v-for="borrow in borrows" :key="borrow._id">
-                <p><strong>ID Mượn:</strong> {{ borrow._id }}</p>
-                <p><strong>ID Sách:</strong> {{ borrow.bookId }}</p>
-                <p><strong>ID Người Dùng:</strong> {{ borrow.userId }}</p>
-                <p><strong>ID Nhân Viên:</strong> {{ borrow.staffId }}</p>
-                <p><strong>Ngày Mượn:</strong> {{ formatDate(borrow.borrowDate) }}</p>
-                <p><strong>Ngày Trả:</strong> {{ formatDate(borrow.returnDate) }}</p>
-                <hr />
+                {{ borrow.bookId }} - {{ borrow.userId }}
+                <!-- Nút để lấy chi tiết cho từng borrow -->
+                <button @click="fetchBorrowDetails(borrow._id)">Xem chi tiết</button>
             </li>
         </ul>
-        <p v-else>Không có dữ liệu mượn trả</p>
+
+        <!-- Hiển thị chi tiết nếu có -->
+        <div v-if="borrowDetails">
+            <h2>Chi tiết Mượn</h2>
+            <p><strong>Book name:</strong> {{ borrowDetails[0].bookDetails.bookName }}</p>
+        </div>
     </div>
 </template>
 
 <script>
-import BorrowService from "@/services/borrow.service";
+import borrowService from '@/services/borrow.service';
 
 export default {
-    name: "BorrowList",
     data() {
         return {
-            borrows: [] // Array to hold the borrow records
+            borrows: [],
+            borrowDetails: null, // Để lưu chi tiết của borrow
         };
     },
     async created() {
         try {
-            this.borrows = await BorrowService.getAll();
+            const borrowList = await borrowService.getAll();
+            console.log("Borrow List:", borrowList);
+            this.borrows = borrowList;
         } catch (error) {
-            console.error("Lỗi khi lấy danh sách mượn trả:", error);
+            console.error("Lỗi:", error.message);
         }
     },
     methods: {
-        formatDate(date) {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(date).toLocaleDateString("vi-VN", options);
-        }
-    }
+        async fetchBorrowDetails(id) {
+            try {
+                const details = await borrowService.getBorrowsWithDetails(id);
+                console.log("Borrow Details:", details); // Kiểm tra chi tiết mượn
+                this.borrowDetails = details; // Lưu chi tiết vào biến
+            } catch (error) {
+                console.error("Lỗi khi lấy chi tiết mượn:", error.message);
+            }
+        },
+    },
 };
 </script>
-
-<style scoped></style>

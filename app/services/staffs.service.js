@@ -7,9 +7,7 @@ class Staffs_Service {
 
   extractStaffData(payload) {
     const staff = {
-      first_name: payload.first_name,
-      last_name: payload.last_name, // Sửa 'lasr_name' thành 'last_name'
-      role: payload.role,
+      name: payload.name,
       address: payload.address,
       phone_number: payload.phone_number,
     };
@@ -25,8 +23,7 @@ class Staffs_Service {
 
     const result = await this.Staff.findOneAndUpdate(
       {
-        first_name: staff.first_name,
-        last_name: staff.last_name,
+        name: staff.name,
         phone_number: staff.phone_number,
       }, // Sửa để phù hợp với trường 'staff'
       { $set: staff },

@@ -1,4 +1,4 @@
-const { ObjectID, ReturnDocument, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 class Publisher_Service {
   constructor(client) {
@@ -7,12 +7,11 @@ class Publisher_Service {
 
   extractPublisherData(payload) {
     const publisher = {
-      NXB_Ma: payload.NXB_Ma,
-      NXB_Ten: payload.NXB_Ten,
-      NXB_DiaChi: payload.NXB_DiaChi,
+      publisherId: payload.publisherId,
+      publisherName: payload.publisherName,
+      publisherAddress: payload.publisherAddress,
     };
 
-    // Loại bỏ các trường không có giá trị
     Object.keys(publisher).forEach(
       (key) => publisher[key] === undefined && delete publisher[key]
     );
@@ -23,9 +22,9 @@ class Publisher_Service {
     const publisher = this.extractPublisherData(payload);
 
     const result = await this.Publishers.findOneAndUpdate(
-      { NXB_Ma: publisher.NXB_Ma },
+      { publisherId: publisher.publisherId }, // Sử dụng publisherId thay vì _id
       { $set: publisher },
-      { returnDocument: ReturnDocument.AFTER, upsert: true } // Sử dụng upsert để tạo mới nếu không tìm thấy
+      { returnDocument: "after", upsert: true }
     );
     return result.value;
   }
@@ -35,17 +34,12 @@ class Publisher_Service {
     return await cursor.toArray();
   }
 
-  async findByName(name) {
-    return await this.find({
-      NXB_Ten: { $regex: new RegExp(name, "i") }, // Sử dụng regex để tìm tên
-    });
-  }
-
   async findById(id) {
     if (!ObjectId.isValid(id)) {
       return null; // Trả về null nếu ID không hợp lệ
     }
 
+    // Nếu ID hợp lệ, tiến hành truy vấn MongoDB
     return await this.Publishers.findOne({
       _id: new ObjectId(id),
     });
@@ -59,7 +53,7 @@ class Publisher_Service {
     const result = await this.Publishers.findOneAndUpdate(
       filter,
       { $set: update },
-      { returnDocument: ReturnDocument.AFTER } // Sử dụng returnDocument cho MongoDB v4.2+
+      { returnOriginal: "after" } // Use this for MongoDB versions < v4.2
     );
     return result;
   }

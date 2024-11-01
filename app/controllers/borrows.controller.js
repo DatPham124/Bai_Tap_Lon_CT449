@@ -1,4 +1,4 @@
-const { ObjectId } = require("mongodb"); // Đảm bảo import ObjectId
+const { ObjectId } = require("mongodb");
 const BorrowService = require("../services/borrows.service");
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
@@ -19,9 +19,9 @@ exports.create = async (req, res, next) => {
     const borrowService = new BorrowService(client);
 
     const result = await borrowService.create({
-      bookId: new ObjectId(bookId), // Sử dụng new ObjectId
-      userId: new ObjectId(userId), // Sử dụng new ObjectId
-      staffId: new ObjectId(staffId), // Sử dụng new ObjectId
+      bookId: new ObjectId(bookId),
+      userId: new ObjectId(userId),
+      staffId: new ObjectId(staffId),
       borrowDate: new Date(borrowDate),
       returnDate: new Date(returnDate),
     });
@@ -44,8 +44,6 @@ exports.getAll = async (req, res, next) => {
 
   try {
     const borrowService = new BorrowService(MongoDB.client);
-    const { title } = req.query;
-
     documents = await borrowService.find({});
   } catch (error) {
     console.error("Error retrieving borrow:", error.message);
@@ -60,8 +58,8 @@ exports.getAll = async (req, res, next) => {
 
 exports.getById = async (req, res, next) => {
   try {
-    const borrowsService = new BorrowService(MongoDB.client);
-    const document = await borrowsService.findById(req.params.id);
+    const borrowService = new BorrowService(MongoDB.client);
+    const document = await borrowService.findById(req.params.id);
     if (!document) {
       return next(new ApiError(404, "Borrow not found"));
     }
@@ -93,13 +91,12 @@ exports.update = async (req, res, next) => {
       `Error while updating borrow record with ID ${req.params.id}:`,
       error.message
     );
-    console.error(error.stack);
-
     return next(
       new ApiError(500, `Error updating borrow record with id=${req.params.id}`)
     );
   }
 };
+
 exports.delete = async (req, res, next) => {
   try {
     const borrowService = new BorrowService(MongoDB.getClient());
@@ -121,5 +118,24 @@ exports.delete = async (req, res, next) => {
         `Could not delete borrow record with id=${req.params.id}`
       )
     );
+  }
+};
+// borrow.controller.js
+exports.getBorrowsWithDetails = async (req, res, next) => {
+  try {
+    const borrowService = new BorrowService(MongoDB.getClient());
+    const borrows = await borrowService.findWithDetails({}); // Lấy tất cả bản ghi mượn với chi tiết
+
+    if (!borrows || borrows.length === 0) {
+      return next(new ApiError(404, "No borrow records found"));
+    }
+
+    res.json(borrows); // Trả về dữ liệu chi tiết
+  } catch (error) {
+    console.error(
+      "Error while retrieving borrows with details:",
+      error.message
+    );
+    return next(new ApiError(500, "Error retrieving borrow details"));
   }
 };
