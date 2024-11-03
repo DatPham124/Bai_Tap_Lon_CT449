@@ -1,16 +1,13 @@
-const { ReturnDocument, ObjectId } = require("mongodb");
+const Staff = require("/home/datpham/CT449-Lab/BTL/app/models/Satff.js");
 
-class Staffs_Service {
-  constructor(client) {
-    this.Staff = client.db().collection("Staffs");
-  }
-
+class StaffsService {
   extractStaffData(payload) {
     const staff = {
       name: payload.name,
       address: payload.address,
       phone_number: payload.phone_number,
     };
+
     // Xóa các trường undefined
     Object.keys(staff).forEach(
       (key) => staff[key] === undefined && delete staff[key]
@@ -19,54 +16,31 @@ class Staffs_Service {
   }
 
   async create(payload) {
-    const staff = this.extractStaffData(payload);
-
-    const result = await this.Staff.findOneAndUpdate(
-      {
-        name: staff.name,
-        phone_number: staff.phone_number,
-      }, // Sửa để phù hợp với trường 'staff'
-      { $set: staff },
-      { returnDocument: ReturnDocument.AFTER, upsert: true } // Nếu không tìm thấy thì sẽ tạo mới
-    );
-    return result.value;
+    const staffData = this.extractStaffData(payload);
+    const staff = new Staff(staffData);
+    return await staff.save();
   }
 
   async find(filter) {
-    const cursor = await this.Staff.find(filter);
-    return await cursor.toArray();
+    return await Staff.find(filter).exec();
   }
 
   async findById(id) {
-    if (!ObjectId.isValid(id)) {
-      return null; // Trả về null nếu ID không hợp lệ
-    }
-
-    // Nếu ID hợp lệ, tiến hành truy vấn MongoDB
-    return await this.Staff.findOne({
-      _id: new ObjectId(id),
-    });
+    return await Staff.findById(id).exec();
   }
 
   async update(id, payload) {
-    const filter = {
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-    };
-    const update = this.extractStaffData(payload);
-    const result = await this.Staff.findOneAndUpdate(
-      filter,
-      { $set: update },
-      { returnOriginal: "after" } // Use this for MongoDB versions < v4.2
-    );
-    return result;
+    const updateData = this.extractStaffData(payload);
+    return await Staff.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true }
+    ).exec();
   }
 
   async delete(id) {
-    const result = await this.Staff.findOneAndDelete({
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-    });
-    return result;
+    return await Staff.findByIdAndDelete(id).exec();
   }
 }
 
-module.exports = Staffs_Service;
+module.exports = StaffsService;

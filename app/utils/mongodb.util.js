@@ -1,20 +1,30 @@
-const { MongoClient } = require("mongodb");
+const mongoose = require("mongoose");
 
 class MongoDB {
-  static connect = async (uri) => {
+  static async connect(uri) {
     if (this.client) return this.client;
-    this.client = await MongoClient.connect(uri);
-    return this.client;
-  };
 
-  static getClient = () => {
+    try {
+      this.client = await mongoose.connect(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log("Connected to MongoDB with Mongoose!");
+      return this.client;
+    } catch (error) {
+      console.error("Failed to connect to MongoDB:", error);
+      throw error;
+    }
+  }
+
+  static getClient() {
     if (!this.client) {
       throw new Error(
         "Database connection not established. Call connect first."
       );
     }
-    return this.client; // Trả về client nếu đã kết nối
-  };
+    return this.client;
+  }
 }
 
 module.exports = MongoDB;

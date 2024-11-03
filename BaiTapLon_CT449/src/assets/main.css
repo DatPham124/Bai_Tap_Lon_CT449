@@ -1,6 +1,6 @@
 /* Đặt style cho toàn bộ #app */
 #app {
-  max-width: 800px;
+  max-width: 1024px;
   margin: 0 auto;
   padding: 2rem;
   font-family: Arial, sans-serif;

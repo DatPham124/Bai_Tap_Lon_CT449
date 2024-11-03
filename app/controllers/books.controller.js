@@ -1,5 +1,4 @@
 const BooksService = require("../services/books.service");
-const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
 // Hàm để xử lý khi tạo sách mới
@@ -10,7 +9,7 @@ exports.create = async (req, res, next) => {
   }
 
   try {
-    const booksService = new BooksService(MongoDB.client);
+    const booksService = new BooksService(); // Không cần client, sử dụng Mongoose
     // Gọi phương thức create từ BooksService
     const document = await booksService.create(req.body);
     return res.send(document); // Gửi lại tài liệu sách đã tạo
@@ -25,7 +24,7 @@ exports.getAll = async (req, res, next) => {
   let documents = [];
 
   try {
-    const booksService = new BooksService(MongoDB.client);
+    const booksService = new BooksService(); // Không cần client, sử dụng Mongoose
     const { bookName } = req.query;
 
     // Kiểm tra xem có query để tìm theo tiêu đề sách không
@@ -45,7 +44,7 @@ exports.getAll = async (req, res, next) => {
 // Hàm để lấy thông tin chi tiết của một cuốn sách theo ID
 exports.getById = async (req, res, next) => {
   try {
-    const booksService = new BooksService(MongoDB.client);
+    const booksService = new BooksService(); // Không cần client, sử dụng Mongoose
     const document = await booksService.findById(req.params.id);
     if (!document) {
       return next(new ApiError(404, "Book not found")); // Nếu không tìm thấy sách
@@ -67,7 +66,7 @@ exports.update = async (req, res, next) => {
   }
 
   try {
-    const booksService = new BooksService(MongoDB.client);
+    const booksService = new BooksService(); // Không cần client, sử dụng Mongoose
     // Gọi phương thức update từ BooksService
     const document = await booksService.update(req.params.id, req.body);
 
@@ -91,7 +90,7 @@ exports.update = async (req, res, next) => {
 // Hàm để xóa một cuốn sách
 exports.delete = async (req, res, next) => {
   try {
-    const booksService = new BooksService(MongoDB.client);
+    const booksService = new BooksService(); // Không cần client, sử dụng Mongoose
     const document = await booksService.delete(req.params.id);
     if (!document) {
       return next(new ApiError(404, "Book not found")); // Nếu không tìm thấy sách để xóa

@@ -1,6 +1,4 @@
-const { ObjectId } = require("mongodb");
-const BorrowService = require("../services/borrows.service");
-const MongoDB = require("../utils/mongodb.util");
+const BorrowService = require("../services/borrows.service.js");
 const ApiError = require("../api-error");
 
 exports.create = async (req, res, next) => {
@@ -11,24 +9,15 @@ exports.create = async (req, res, next) => {
       return next(new ApiError(400, "All fields are required."));
     }
 
-    const client = MongoDB.getClient();
-    if (!client) {
-      return next(new ApiError(500, "Database connection error."));
-    }
-
-    const borrowService = new BorrowService(client);
+    const borrowService = new BorrowService();
 
     const result = await borrowService.create({
-      bookId: new ObjectId(bookId),
-      userId: new ObjectId(userId),
-      staffId: new ObjectId(staffId),
+      bookId,
+      userId,
+      staffId,
       borrowDate: new Date(borrowDate),
       returnDate: new Date(returnDate),
     });
-
-    if (!result) {
-      return next(new ApiError(404, "Borrow record could not be created."));
-    }
 
     return res.status(201).json({
       message: "Borrow record created successfully.",
@@ -40,33 +29,32 @@ exports.create = async (req, res, next) => {
 };
 
 exports.getAll = async (req, res, next) => {
-  let documents = [];
-
   try {
-    const borrowService = new BorrowService(MongoDB.client);
-    documents = await borrowService.find({});
+    const borrowService = new BorrowService();
+    const documents = await borrowService.find({});
+    return res.send(documents);
   } catch (error) {
-    console.error("Error retrieving borrow:", error.message);
-    console.error("Stack trace:", error.stack);
+    console.error("Error retrieving borrows:", error.message);
     return next(
       new ApiError(500, "An error occurred while retrieving borrows")
     );
   }
-
-  return res.send(documents);
 };
 
 exports.getById = async (req, res, next) => {
   try {
-    const borrowService = new BorrowService(MongoDB.client);
+    const borrowService = new BorrowService();
     const document = await borrowService.findById(req.params.id);
     if (!document) {
-      return next(new ApiError(404, "Borrow not found"));
+      return next(new ApiError(404, "Borrow record not found"));
     }
     return res.send(document);
   } catch (error) {
     return next(
-      new ApiError(500, `Error retrieving borrow with id=${req.params.id}`)
+      new ApiError(
+        500,
+        `Error retrieving borrow record with id=${req.params.id}`
+      )
     );
   }
 };
@@ -77,20 +65,15 @@ exports.update = async (req, res, next) => {
   }
 
   try {
-    const borrowService = new BorrowService(MongoDB.getClient());
+    const borrowService = new BorrowService();
     const document = await borrowService.update(req.params.id, req.body);
 
     if (!document) {
-      console.error(`Borrow record with ID ${req.params.id} not found`);
       return next(new ApiError(404, "Borrow record not found"));
     }
 
     return res.send({ message: "Borrow record was updated successfully" });
   } catch (error) {
-    console.error(
-      `Error while updating borrow record with ID ${req.params.id}:`,
-      error.message
-    );
     return next(
       new ApiError(500, `Error updating borrow record with id=${req.params.id}`)
     );
@@ -99,7 +82,7 @@ exports.update = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
-    const borrowService = new BorrowService(MongoDB.getClient());
+    const borrowService = new BorrowService();
     const document = await borrowService.delete(req.params.id);
 
     if (!document) {
@@ -108,10 +91,6 @@ exports.delete = async (req, res, next) => {
 
     return res.send({ message: "Borrow record was deleted successfully" });
   } catch (error) {
-    console.error(
-      `Error while deleting borrow record with ID ${req.params.id}:`,
-      error.message
-    );
     return next(
       new ApiError(
         500,
@@ -120,10 +99,10 @@ exports.delete = async (req, res, next) => {
     );
   }
 };
-// borrow.controller.js
+
 exports.getBorrowsWithDetails = async (req, res, next) => {
   try {
-    const borrowService = new BorrowService(MongoDB.getClient());
+    const borrowService = new BorrowService();
     const borrows = await borrowService.findWithDetails({}); // Lấy tất cả bản ghi mượn với chi tiết
 
     if (!borrows || borrows.length === 0) {
@@ -132,10 +111,7 @@ exports.getBorrowsWithDetails = async (req, res, next) => {
 
     res.json(borrows); // Trả về dữ liệu chi tiết
   } catch (error) {
-    console.error(
-      "Error while retrieving borrows with details:",
-      error.message
-    );
+    console.error("Error retrieving borrows with details:", error.message);
     return next(new ApiError(500, "Error retrieving borrow details"));
   }
 };

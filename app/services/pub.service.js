@@ -1,10 +1,6 @@
-const { ObjectId } = require("mongodb");
+const Publisher = require("/home/datpham/CT449-Lab/BTL/app/models/Publisher.js"); // Import mô hình Publisher
 
 class Publisher_Service {
-  constructor(client) {
-    this.Publishers = client.db().collection("Publishers");
-  }
-
   extractPublisherData(payload) {
     const publisher = {
       publisherId: payload.publisherId,
@@ -20,48 +16,32 @@ class Publisher_Service {
 
   async create(payload) {
     const publisher = this.extractPublisherData(payload);
+    const newPublisher = new Publisher(publisher);
 
-    const result = await this.Publishers.findOneAndUpdate(
-      { publisherId: publisher.publisherId }, // Sử dụng publisherId thay vì _id
-      { $set: publisher },
-      { returnDocument: "after", upsert: true }
-    );
-    return result.value;
+    const result = await newPublisher.save(); // Lưu mô hình mới vào cơ sở dữ liệu
+    return result;
   }
 
   async find(filter) {
-    const cursor = await this.Publishers.find(filter);
-    return await cursor.toArray();
+    return await Publisher.find(filter); // Tìm tất cả nhà xuất bản theo điều kiện
   }
 
   async findById(id) {
-    if (!ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return null; // Trả về null nếu ID không hợp lệ
     }
 
-    // Nếu ID hợp lệ, tiến hành truy vấn MongoDB
-    return await this.Publishers.findOne({
-      _id: new ObjectId(id),
-    });
+    return await Publisher.findById(id); // Tìm nhà xuất bản theo ID
   }
 
   async update(id, payload) {
-    const filter = {
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-    };
     const update = this.extractPublisherData(payload);
-    const result = await this.Publishers.findOneAndUpdate(
-      filter,
-      { $set: update },
-      { returnOriginal: "after" } // Use this for MongoDB versions < v4.2
-    );
+    const result = await Publisher.findByIdAndUpdate(id, update, { new: true }); // Cập nhật và trả về tài liệu mới
     return result;
   }
 
   async delete(id) {
-    const result = await this.Publishers.findOneAndDelete({
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-    });
+    const result = await Publisher.findByIdAndDelete(id); // Xóa nhà xuất bản theo ID
     return result;
   }
 }

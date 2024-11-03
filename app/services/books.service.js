@@ -1,22 +1,24 @@
-const { ObjectId } = require("mongodb");
+const mongoose = require("mongoose");
+const Book = require("/home/datpham/CT449-Lab/BTL/app/models/Book.js"); // Đường dẫn đến model Book
+const Publisher = require("/home/datpham/CT449-Lab/BTL/app/models/Publisher.js"); // Đường dẫn đến model Publisher
 
 class Books_Service {
-  constructor(client) {
-    this.Books = client.db().collection("Books");
-    this.Publishers = client.db().collection("Publishers"); // Thêm tham chiếu đến collection Publishers
+  constructor() {
+    this.Book = Book; // Sử dụng model Book đã được định nghĩa bằng Mongoose
+    this.Publisher = Publisher; // Sử dụng model Publisher
   }
 
   extractBookData(payload) {
     const book = {
-      bookId: payload.bookId, // Mã sách
-      bookName: payload.bookName, // Tên sách
-      numberOfCopies: payload.numberOfCopies, // Số lượng quyền sách
-      publicationYear: payload.publicationYear, // Năm xuất bản
-      author: payload.author, // Tác giả
-      coverImage: payload.coverImage, // Hình ảnh bìa sách
+      bookId: payload.bookId,
+      bookName: payload.bookName,
+      numberOfCopies: payload.numberOfCopies,
+      publicationYear: payload.publicationYear,
+      author: payload.author,
+      coverImage: payload.coverImage,
       publisherId: payload.publisherId
-        ? new ObjectId(payload.publisherId)
-        : undefined, // Mã nhà xuất bản
+        ? new mongoose.Types.ObjectId(payload.publisherId)
+        : undefined,
     };
 
     Object.keys(book).forEach(
@@ -27,28 +29,16 @@ class Books_Service {
 
   async create(payload) {
     const book = this.extractBookData(payload);
-
-    const result = await this.Books.findOneAndUpdate(
-      { bookId: book.bookId, bookName: book.bookName },
+    const result = await this.Book.findOneAndUpdate(
+      { bookId: book.bookId },
       { $set: book },
-      { returnDocument: "after", upsert: true }
+      { new: true, upsert: true }
     );
-    return result.value;
+    return result;
   }
 
   async find(filter) {
-    const cursor = await this.Books.find(filter);
-    const books = await cursor.toArray();
-
-    // Lấy thông tin chi tiết của nhà xuất bản cho từng cuốn sách
-    for (const book of books) {
-      if (book.publisherId) {
-        const publisher = await this.Publishers.findOne({
-          _id: book.publisherId,
-        });
-        book.publisherDetails = publisher || null; // Thêm thông tin nhà xuất bản vào kết quả
-      }
-    }
+    const books = await this.Book.find(filter).populate("publisherId"); // Tự động lấy thông tin publisher
 
     return books;
   }
@@ -60,52 +50,39 @@ class Books_Service {
   }
 
   async findById(id) {
-    if (!ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return null;
     }
 
-    const book = await this.Books.findOne({
-      _id: new ObjectId(id),
-    });
-
-    // Lấy thông tin nhà xuất bản nếu tồn tại publisherId
-    if (book && book.publisherId) {
-      const publisher = await this.Publishers.findOne({
-        _id: book.publisherId,
-      });
-      book.publisherDetails = publisher || null;
-    }
+    const book = await this.Book.findById(id).populate("publisherId"); // Lấy thông tin publisher
 
     return book;
   }
 
   async update(id, payload) {
     const filter = {
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+      _id: mongoose.Types.ObjectId.isValid(id)
+        ? new mongoose.Types.ObjectId(id)
+        : null,
     };
     const update = this.extractBookData(payload);
 
-    const result = await this.Books.findOneAndUpdate(
+    const result = await this.Book.findOneAndUpdate(
       filter,
       { $set: update },
-      { returnDocument: "after" }
+      { new: true }
     );
 
-    if (result.value && result.value.publisherId) {
-      const publisher = await this.Publishers.findOne({
-        _id: result.value.publisherId,
-      });
-      result.value.publisherDetails = publisher || null;
-    }
-
-    return result.value;
+    return result;
   }
 
   async delete(id) {
-    const result = await this.Books.findOneAndDelete({
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-    });
-    return result.value;
+    const result = await this.Book.findByIdAndDelete(
+      mongoose.Types.ObjectId.isValid(id)
+        ? new mongoose.Types.ObjectId(id)
+        : null
+    );
+    return result;
   }
 }
 

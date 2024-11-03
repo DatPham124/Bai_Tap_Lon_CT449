@@ -4,15 +4,16 @@ const MongoDB = require("./app/utils/mongodb.util");
 
 async function startServer() {
   try {
+    // Kết nối tới MongoDB bằng Mongoose
     await MongoDB.connect(config.db.uri);
-    console.log("Connected to the databases!");
 
+    // Khởi động server
     const PORT = config.app.port;
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {
-    console.log("Cannot connect to the databases!", error);
+    console.error("Cannot connect to the database!", error);
     process.exit();
   }
 }

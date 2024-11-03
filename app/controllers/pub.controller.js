@@ -1,5 +1,4 @@
 const PublisherService = require("../services/pub.service");
-const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
 // Hàm để xử lý khi tạo nhà xuất bản mới
@@ -9,7 +8,7 @@ exports.create = async (req, res, next) => {
   }
 
   try {
-    const publisherService = new PublisherService(MongoDB.client);
+    const publisherService = new PublisherService(); // Khởi tạo mà không cần MongoDB.client
     const document = await publisherService.create(req.body);
     return res.send(document);
   } catch (error) {
@@ -24,11 +23,11 @@ exports.getAll = async (req, res, next) => {
   let documents = [];
 
   try {
-    const publisherService = new PublisherService(MongoDB.client);
+    const publisherService = new PublisherService(); // Khởi tạo mà không cần MongoDB.client
     const { publisherName } = req.query;
 
     if (publisherName) {
-      documents = await publisherService.findByName(publisherName);
+      documents = await publisherService.find({ publisherName }); // Giả sử có phương thức tìm kiếm theo tên
     } else {
       documents = await publisherService.find({});
     }
@@ -45,7 +44,7 @@ exports.getAll = async (req, res, next) => {
 // Hàm để lấy thông tin chi tiết của một nhà xuất bản theo ID
 exports.getById = async (req, res, next) => {
   try {
-    const publisherService = new PublisherService(MongoDB.client);
+    const publisherService = new PublisherService(); // Khởi tạo mà không cần MongoDB.client
     const document = await publisherService.findById(req.params.id);
     if (!document) {
       return next(new ApiError(404, "Publisher not found"));
@@ -58,13 +57,14 @@ exports.getById = async (req, res, next) => {
   }
 };
 
+// Hàm để cập nhật thông tin của một nhà xuất bản
 exports.update = async (req, res, next) => {
   if (Object.keys(req.body).length === 0) {
     return next(new ApiError(400, "Data to update can not be empty"));
   }
 
   try {
-    const publisherService = new PublisherService(MongoDB.client);
+    const publisherService = new PublisherService(); // Khởi tạo mà không cần MongoDB.client
     const document = await publisherService.update(req.params.id, req.body);
 
     if (!document) {
@@ -89,7 +89,7 @@ exports.update = async (req, res, next) => {
 // Hàm để xóa một nhà xuất bản
 exports.delete = async (req, res, next) => {
   try {
-    const publisherService = new PublisherService(MongoDB.client);
+    const publisherService = new PublisherService(); // Khởi tạo mà không cần MongoDB.client
     const document = await publisherService.delete(req.params.id);
     if (!document) {
       return next(new ApiError(404, "Publisher not found"));
