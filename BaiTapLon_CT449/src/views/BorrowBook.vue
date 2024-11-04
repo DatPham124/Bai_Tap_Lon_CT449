@@ -2,11 +2,12 @@
 import BorrowList from "@/components/BorrowList.vue";
 
 export default {
-    name: "BorrowBook",
+    name: "BorrowBook", // Đổi tên component cha
     components: {
         BorrowList,
     }
 };
+
 </script>
 
 <template>

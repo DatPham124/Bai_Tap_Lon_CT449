@@ -67,11 +67,23 @@ export default {
                     email: this.email,
                     password: this.password
                 });
-                localStorage.setItem('token', res.data.token);
+
+                // Lưu token vào localStorage hoặc sessionStorage
+                if (this.rememberMe) {
+                    localStorage.setItem('token', res.data.token);
+                } else {
+                    sessionStorage.setItem('token', res.data.token);
+                }
+
+                // Phát sự kiện thông báo đăng nhập thành công
+                this.$root.emitter.emit("loginStatusChanged");
 
                 // Hiển thị thông báo thành công
                 this.success = true;
                 this.message = "Login successful!";
+
+                // Chuyển hướng đến trang chủ
+                this.$router.push("/");
             } catch (err) {
                 // Hiển thị thông báo lỗi
                 this.success = false;
@@ -81,6 +93,7 @@ export default {
     }
 };
 </script>
+
 
 <style scoped>
 /* Thêm các tùy chỉnh CSS cho mẫu đăng nhập tại đây */
