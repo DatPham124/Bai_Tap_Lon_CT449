@@ -6,7 +6,7 @@
             </router-link>
 
             <nav class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                <a href="#" class="nav-link px-2">Sách</a>
+                <router-link class="nav-link px-2" to="/book">Sách</router-link>
                 <a href="#" class="nav-link px-2">Tác giả</a>
                 <a href="#" class="nav-link px-2">Độc giả </a>
                 <a href="#" class="nav-link px-2">Nhà xuất bản</a>

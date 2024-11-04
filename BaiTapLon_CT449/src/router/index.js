@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from "vue-router";
 import BorrowBook from "@/views/BorrowBook.vue";
 import Register from "@/components/Register.vue";
 import Login from "@/components/Login.vue";
+import Book from "@/views/Book.vue";
 
 // Hàm kiểm tra token trong localStorage
 function isAuthenticated() {
@@ -15,6 +16,7 @@ const routes = [
     component: BorrowBook,
     meta: { requiresAuth: true }, // Đánh dấu route này yêu cầu đăng nhập
   },
+  { path: "/book", component: Book },
   { path: "/register", component: Register },
   { path: "/login", component: Login },
 ];
