@@ -1,7 +1,15 @@
 <template>
     <div>
-        <h2 class="text-center">Danh sách sách</h2>
+        <h2 class="text-center">Danh mục sách</h2>
+
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-success btn-sm">
+                <i class="fas fa-plus"></i> Thêm sách
+            </button>
+        </div>
         <div v-if="books && books.length">
+
+
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -20,14 +28,14 @@
                         <td>{{ book.publicationYear }}</td>
                         <td>
                             <button class="btn btn-sm btn-primary me-2" @click="editBook(book.id)">Sửa</button>
-                            <button class="btn btn-sm btn-danger" @click="deleteBook(book.id)">Xóa</button>
+                            <button class="btn btn-sm btn-danger" @click="deleteBook(book._id)">Xóa</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div v-else>
-            <p class="text-center">Không có sách nào để hiển thị.</p>
+            <p class="text-center ">Không có sách nào để hiển thị.</p>
         </div>
     </div>
 </template>
@@ -60,13 +68,15 @@ export default {
         async deleteBook(id) {
             if (confirm("Bạn có chắc chắn muốn xóa sách này không?")) {
                 try {
+                    console.log("Đây là id:", id);
                     await BookService.delete(id); // Gọi hàm xóa sách từ BookService
-                    this.books = this.books.filter(book => book.id !== id); // Cập nhật lại danh sách sách
+                    await this.fetchBooks(); // Gọi lại fetchBooks để cập nhật danh sách từ server
                 } catch (error) {
                     console.error("Lỗi khi xóa sách:", error);
                 }
             }
         }
+
     }
 };
 </script>

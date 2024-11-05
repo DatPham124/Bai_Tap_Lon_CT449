@@ -12,25 +12,23 @@
                 <a href="#" class="nav-link px-2">Nhà xuất bản</a>
             </nav>
 
-            <div class="col-md-3 text-end">
+            <div class="col-md-2 text-end">
                 <div v-if="isLoggedIn" class="dropdown">
                     <img src="https://via.placeholder.com/40" class="rounded-circle dropdown-toggle" id="userMenu"
                         role="button" data-bs-toggle="dropdown" aria-expanded="false" />
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                         <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
                         <li><a class="dropdown-item" href="#" @click="logout">Logout</a></li>
                     </ul>
                 </div>
                 <div v-else>
                     <router-link to="/login"><button type="button"
                             class="btn btn-outline-primary me-2">Login</button></router-link>
-                    <router-link to="/register"><button type="button"
+                    <router-link to="/register/user"><button type="button"
                             class="btn btn-primary">Sign-up</button></router-link>
                 </div>
             </div>
+
         </header>
     </div>
 </template>

@@ -2,28 +2,37 @@ const StaffsService = require("../services/staffs.service");
 const ApiError = require("../api-error");
 
 exports.create = async (req, res, next) => {
+  // Kiểm tra xem tên và mật khẩu có tồn tại không
   if (!req.body?.name) {
     return next(new ApiError(400, "Name cannot be empty"));
+  }
+
+  // Kiểm tra xem mật khẩu có tồn tại không (nếu cần thiết)
+  if (!req.body?.password) {
+    return next(new ApiError(400, "Password cannot be empty"));
   }
 
   try {
     const staffsService = new StaffsService();
     const document = await staffsService.create(req.body);
-    return res.status(201).send(document);
+    return res.status(201).send(document); // Trả về status 201 cho tài nguyên mới tạo
   } catch (error) {
     console.error("Error creating staff:", error.message);
     return next(new ApiError(500, "An error occurred while creating staff"));
   }
 };
 
+// Hàm để lấy danh sách tất cả nhân viên
 exports.getAll = async (req, res, next) => {
+  let documents = [];
+
   try {
     const staffsService = new StaffsService();
     const { name } = req.query;
 
-    const filter = name ? { name: new RegExp(name, "i") } : {}; // Tìm kiếm theo tên nếu có
-    const documents = await staffsService.find(filter);
-
+    // Lọc nhân viên theo tên nếu có
+    const filter = name ? { name: new RegExp(name, "i") } : {};
+    documents = await staffsService.find(filter);
     return res.send(documents);
   } catch (error) {
     console.error("Error retrieving staff:", error.message);
@@ -31,10 +40,12 @@ exports.getAll = async (req, res, next) => {
   }
 };
 
+// Hàm để lấy thông tin chi tiết của một nhân viên theo ID
 exports.getById = async (req, res, next) => {
   try {
     const staffsService = new StaffsService();
     const document = await staffsService.findById(req.params.id);
+
     if (!document) {
       return next(new ApiError(404, "Staff not found"));
     }
@@ -47,6 +58,7 @@ exports.getById = async (req, res, next) => {
   }
 };
 
+// Hàm để cập nhật thông tin của một nhân viên
 exports.update = async (req, res, next) => {
   if (Object.keys(req.body).length === 0) {
     return next(new ApiError(400, "Data to update cannot be empty"));
@@ -69,6 +81,7 @@ exports.update = async (req, res, next) => {
   }
 };
 
+// Hàm để xóa một nhân viên theo ID
 exports.delete = async (req, res, next) => {
   try {
     const staffsService = new StaffsService();

@@ -68,11 +68,13 @@ export default {
                     password: this.password
                 });
 
-                // Lưu token vào localStorage hoặc sessionStorage
+                // Lưu token và role vào localStorage hoặc sessionStorage
                 if (this.rememberMe) {
                     localStorage.setItem('token', res.data.token);
+                    localStorage.setItem('role', res.data.role);
                 } else {
                     sessionStorage.setItem('token', res.data.token);
+                    sessionStorage.setItem('role', res.data.role);
                 }
 
                 // Phát sự kiện thông báo đăng nhập thành công
@@ -93,7 +95,6 @@ export default {
     }
 };
 </script>
-
 
 <style scoped>
 /* Thêm các tùy chỉnh CSS cho mẫu đăng nhập tại đây */

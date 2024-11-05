@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     address: String,
     email: String,
     password: String,
+    role: { type: String, default: "user" }, // Thêm trường role
   },
   { collection: "Users" }
 );

@@ -6,10 +6,13 @@ const router = express.Router();
 const authController = require("../controllers/auth.controller");
 
 // Đăng ký
-router.post("/register", authController.register);
+router.post("/register/user", authController.registerUser);
 
 // Đăng nhập
 router.post("/login", authController.login);
+
+// Đăng ký
+router.post("/register/staff", authController.registerStaff);
 
 router.get("/testFindUser", async (req, res) => {
   try {

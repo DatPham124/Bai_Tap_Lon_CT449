@@ -1,6 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 import BorrowBook from "@/views/BorrowBook.vue";
-import Register from "@/components/Register.vue";
+import RegisterUser from "@/components/RegisterUser.vue";
 import Login from "@/components/Login.vue";
 import Book from "@/views/Book.vue";
 
@@ -17,7 +17,7 @@ const routes = [
     meta: { requiresAuth: true }, // Đánh dấu route này yêu cầu đăng nhập
   },
   { path: "/book", component: Book },
-  { path: "/register", component: Register },
+  { path: "/register/user", component: RegisterUser },
   { path: "/login", component: Login },
 ];
 

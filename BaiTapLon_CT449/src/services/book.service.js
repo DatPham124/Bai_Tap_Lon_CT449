@@ -22,7 +22,7 @@ class BookService {
   }
 
   async delete(id) {
-    return (await this.api.delete(`/${id}`)).data;
+    return await this.api.delete(`/${id}`);
   }
 }
 

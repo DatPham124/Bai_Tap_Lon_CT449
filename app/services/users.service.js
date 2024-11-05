@@ -9,6 +9,7 @@ class UsersService {
       phone: payload.phone,
       address: payload.address,
       password: payload.password,
+      role: payload.role,
     };
 
     // Xóa các trường undefined
