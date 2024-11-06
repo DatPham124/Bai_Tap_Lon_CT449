@@ -9,7 +9,7 @@
                 <router-link class="nav-link px-2" to="/books">Sách</router-link>
                 <router-link class="nav-link px-2" to="/authors">Tác giả</router-link>
                 <router-link class="nav-link px-2" to="/users">Đọc giả</router-link>
-                <a href="#" class="nav-link px-2">Nhà xuất bản</a>
+                <router-link class="nav-link px-2" to="/publishers">Nhà xuất bản</router-link>
             </nav>
 
             <div class="col-md-2 text-end">

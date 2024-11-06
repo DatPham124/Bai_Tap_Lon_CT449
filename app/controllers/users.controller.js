@@ -2,7 +2,6 @@ const UsersService = require("../services/users.service");
 const ApiError = require("../api-error");
 
 exports.create = async (req, res, next) => {
-  // Kiểm tra xem tên và mật khẩu có tồn tại không
   if (!req.body?.name) {
     return next(new ApiError(400, "Name cannot be empty"));
   }
@@ -13,11 +12,12 @@ exports.create = async (req, res, next) => {
 
   try {
     const usersService = new UsersService();
-
-    // Tạo người dùng mới với Mongoose
     const document = await usersService.create(req.body);
-    return res.status(201).send(document); // Trả về status 201 cho tài nguyên mới tạo
+    return res.status(201).send(document);
   } catch (error) {
+    if (error.message === "Số điện thoại hoặc email đã được đăng ký") {
+      return next(new ApiError(400, error.message));
+    }
     console.error("Error creating user:", error.message);
     return next(new ApiError(500, "An error occurred while creating user"));
   }
@@ -69,6 +69,19 @@ exports.update = async (req, res, next) => {
 
   try {
     const usersService = new UsersService();
+
+    // Kiểm tra nếu người dùng đang cập nhật mật khẩu và cần xác thực mật khẩu cũ
+    if (req.body.password && req.body.oldPassword) {
+      const isOldPasswordValid = await usersService.verifyOldPassword(
+        req.params.id,
+        req.body.oldPassword
+      );
+
+      if (!isOldPasswordValid) {
+        return next(new ApiError(400, "Old password is incorrect"));
+      }
+    }
+
     const document = await usersService.update(req.params.id, req.body);
 
     if (!document) {
@@ -77,6 +90,12 @@ exports.update = async (req, res, next) => {
 
     return res.send({ message: "User was updated successfully" });
   } catch (error) {
+    if (
+      error.message ===
+      "Số điện thoại hoặc email đã được đăng ký bởi người dùng khác"
+    ) {
+      return next(new ApiError(400, error.message));
+    }
     console.error(
       `Error while updating user with ID ${req.params.id}:`,
       error.message

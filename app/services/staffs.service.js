@@ -1,4 +1,5 @@
 const Staff = require("/home/datpham/CT449-Lab/BTL/app/models/Satff.js");
+const mongoose = require("mongoose"); // Thêm dòng này
 
 class StaffsService {
   // Hàm xử lý dữ liệu nhân viên

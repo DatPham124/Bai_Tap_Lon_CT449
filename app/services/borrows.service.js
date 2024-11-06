@@ -1,4 +1,5 @@
 const Borrow = require("/home/datpham/CT449-Lab/BTL/app/models/Borrow.js");
+const mongoose = require("mongoose"); // Thêm dòng này
 
 class BorrowService {
   async create(borrowData) {

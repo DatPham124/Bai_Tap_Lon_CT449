@@ -2,6 +2,11 @@
     <div>
         <h2 class="text-center">Chỉnh sửa đọc giả</h2>
 
+        <!-- Hiển thị lỗi nếu có -->
+        <div v-if="errorMessage" class="alert alert-danger">
+            {{ errorMessage }}
+        </div>
+
         <form @submit.prevent="updateUser">
             <div class="mb-3">
                 <label for="name" class="form-label">Tên đọc giả</label>
@@ -19,6 +24,14 @@
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" v-model="user.email" id="email" required>
             </div>
+
+            <!-- Trường nhập mật khẩu cũ -->
+            <div class="mb-3">
+                <label for="oldPassword" class="form-label">Mật khẩu cũ</label>
+                <input type="password" class="form-control" v-model="oldPassword" id="oldPassword">
+            </div>
+
+            <!-- Trường nhập mật khẩu mới -->
             <div class="mb-3">
                 <label for="newPassword" class="form-label">Mật khẩu mới (để trống nếu không đổi)</label>
                 <input type="password" class="form-control" v-model="newPassword" id="newPassword">
@@ -40,10 +53,11 @@ export default {
                 name: '',
                 phone: '',
                 address: '',
-                email: '',
-                password: '' // Chỉ dùng để lấy dữ liệu ban đầu, không hiển thị trên form
+                email: ''
             },
-            newPassword: '' // Thuộc tính tạm thời để lưu mật khẩu mới
+            oldPassword: '', // Mật khẩu cũ để xác thực trước khi đổi mật khẩu
+            newPassword: '',
+            errorMessage: '' // Thông báo lỗi
         };
     },
     methods: {
@@ -54,9 +68,10 @@ export default {
                 if (response) {
                     this.user = response;
                 } else {
-                    console.error("Không tìm thấy dữ liệu đọc giả");
+                    this.errorMessage = "Không tìm thấy dữ liệu đọc giả";
                 }
             } catch (error) {
+                this.errorMessage = "Lỗi khi lấy thông tin đọc giả";
                 console.error("Lỗi khi lấy thông tin đọc giả:", error);
             }
         },
@@ -64,19 +79,37 @@ export default {
             try {
                 const userId = this.$route.params.id;
 
-                // Nếu `newPassword` không rỗng, đặt mật khẩu mới
-                if (this.newPassword) {
-                    this.user.password = this.newPassword;
+                // Tạo dữ liệu cập nhật từ các trường thông tin của người dùng
+                const updateData = { ...this.user };
+
+                // Nếu `newPassword` có độ dài lớn hơn 0, yêu cầu nhập mật khẩu cũ để đổi mật khẩu
+                if (this.newPassword.length > 0) {
+                    console.log("Đây là mật khẩu mới:", this.newPassword);
+                    if (this.oldPassword.length === 0) {
+                        this.errorMessage = 'Vui lòng nhập mật khẩu cũ để đổi mật khẩu mới';
+                        return;
+                    }
+                    // Thêm trường `oldPassword` và `newPassword` vào dữ liệu cập nhật
+                    updateData.oldPassword = this.oldPassword;
+                    updateData.password = this.newPassword;
                 }
 
-                await userService.update(userId, this.user);
+                // Gọi API để cập nhật người dùng
+                await userService.update(userId, updateData);
 
                 // Điều hướng về trang danh sách với thông báo thành công
                 this.$router.push({ name: 'ListUser', query: { successMessage: 'Đọc giả đã được cập nhật thành công!' } });
             } catch (error) {
-                console.error("Lỗi khi cập nhật đọc giả:", error);
+                // Kiểm tra lỗi trả về từ backend và hiển thị thông báo
+                if (error.response && error.response.data && error.response.data.message) {
+                    this.errorMessage = error.response.data.message;
+                } else {
+                    this.errorMessage = "Lỗi không xác định khi cập nhật đọc giả";
+                    console.error("Lỗi khi cập nhật đọc giả:", error);
+                }
             }
         }
+
     },
     created() {
         this.fetchUser();

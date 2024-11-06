@@ -1,4 +1,5 @@
 const Publisher = require("/home/datpham/CT449-Lab/BTL/app/models/Publisher.js"); // Import mô hình Publisher
+const mongoose = require("mongoose"); // Thêm dòng này
 
 class Publisher_Service {
   extractPublisherData(payload) {

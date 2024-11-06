@@ -12,6 +12,7 @@ exports.create = async (req, res, next) => {
     const document = await publisherService.create(req.body);
     return res.send(document);
   } catch (error) {
+    console.error("Error details:", error); // Thêm dòng này để log chi tiết lỗi
     return next(
       new ApiError(500, "An error occurred while creating the publisher")
     );

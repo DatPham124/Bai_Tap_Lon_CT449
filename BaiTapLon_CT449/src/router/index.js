@@ -15,6 +15,10 @@ import User from "@/views/User.vue";
 import AddUser from "@/components/user/AddUser.vue";
 import EditUser from "@/components/user/EditUser.vue";
 
+import Publisher from "@/views/Publisher.vue";
+import AddPublisher from "@/components/publisher/AddPublisher.vue";
+import EditPublisher from "@/components/publisher/EditPublisher.vue";
+
 // Hàm kiểm tra token trong localStorage
 function isAuthenticated() {
   return !!(localStorage.getItem("token") || sessionStorage.getItem("token"));
@@ -40,6 +44,18 @@ const routes = [
   { path: "/users", name: "ListUser", component: User },
   { path: "/users/add", name: "AddUser", component: AddUser },
   { path: "/users/edit/:id", name: "EditUser", component: EditUser },
+
+  { path: "/users", name: "ListUser", component: User },
+  { path: "/users/add", name: "AddUser", component: AddUser },
+  { path: "/users/edit/:id", name: "EditUser", component: EditUser },
+
+  { path: "/publishers", name: "ListPublisher", component: Publisher },
+  { path: "/publishers/add", name: "AddPublisher", component: AddPublisher },
+  {
+    path: "/publishers/edit/:id",
+    name: "EditPublisher",
+    component: EditPublisher,
+  },
 ];
 
 const router = createRouter({
