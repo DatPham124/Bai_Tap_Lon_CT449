@@ -8,17 +8,9 @@ const bookSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    bookId: {
-      type: String,
-      required: true,
-    },
-    author: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    coverImage: {
-      type: String,
+    authorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Authors", // liên kết đến model Authors
       required: true,
     },
     numberOfCopies: {
@@ -32,7 +24,7 @@ const bookSchema = new mongoose.Schema(
     },
     publisherId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Publishers", // assuming there's a Publisher model
+      ref: "Publishers", // liên kết đến model Publishers
       required: true,
     },
   },

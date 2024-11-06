@@ -3,11 +3,6 @@ const mongoose = require("mongoose");
 
 const publisherSchema = new mongoose.Schema(
   {
-    publisherId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     publisherAddress: {
       type: String,
       required: true,

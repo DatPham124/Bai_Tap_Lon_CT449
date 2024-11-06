@@ -3,7 +3,6 @@ const Publisher = require("/home/datpham/CT449-Lab/BTL/app/models/Publisher.js")
 class Publisher_Service {
   extractPublisherData(payload) {
     const publisher = {
-      publisherId: payload.publisherId,
       publisherName: payload.publisherName,
       publisherAddress: payload.publisherAddress,
     };

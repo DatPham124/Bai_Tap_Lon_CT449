@@ -9,6 +9,7 @@ const staffRouter = require("./app/routes/staff.route");
 const usersRouter = require("./app/routes/users.route");
 const authRouter = require("./app/routes/auth.route");
 const pubRouter = require("./app/routes/pub.route");
+const authorRouter = require("./app/routes/author.route");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/borrow", borrowsRouter);
 app.use("/api/staff", staffRouter);
 app.use("/api/user", usersRouter);
 app.use("/api/pub", pubRouter);
+app.use("/api/author", authorRouter);
 
 // Xử lý khi không tìm thấy tài nguyên
 app.use((req, res, next) => {

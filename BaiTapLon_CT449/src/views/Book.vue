@@ -1,5 +1,5 @@
 <script>
-import ListBook from '@/components/ListBook.vue';
+import ListBook from '@/components/book/ListBook.vue';
 export default {
     name: "Book",
     components: {

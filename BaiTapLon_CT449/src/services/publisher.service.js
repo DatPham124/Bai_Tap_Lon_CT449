@@ -1,6 +1,6 @@
 import createApiClient from "./api.service";
-class BorrowService {
-  constructor(baseUrl = "/api/book") {
+class PublisherService {
+  constructor(baseUrl = "/api/pub") {
     this.api = createApiClient(baseUrl);
   }
   async getAll() {
@@ -19,4 +19,4 @@ class BorrowService {
     return (await this.api.delete(`/${id}`)).data;
   }
 }
-export default new BorrowService();
+export default new PublisherService();
