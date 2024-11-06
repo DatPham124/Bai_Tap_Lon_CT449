@@ -1,6 +1,7 @@
 // services/author.service.js
 const mongoose = require("mongoose");
 const Author = require("../models/Author");
+const Book = require("../models/Book"); // Import model Book
 
 class AuthorService {
   constructor() {
@@ -9,6 +10,18 @@ class AuthorService {
 
   // Phương thức để tạo mới một tác giả
   async create(authorData) {
+    const { AuthorName } = authorData; // Lấy tên tác giả từ dữ liệu
+
+    // Kiểm tra xem đã có tác giả nào với tên giống hoặc trùng không
+    const existingAuthor = await this.Author.findOne({
+      AuthorName: AuthorName,
+    });
+
+    if (existingAuthor) {
+      throw new Error("Tác giả này đã tồn tại");
+    }
+
+    // Nếu chưa có, tạo mới tác giả
     const author = new this.Author(authorData);
     return await author.save();
   }
@@ -45,12 +58,28 @@ class AuthorService {
     );
   }
 
-  // Phương thức để xóa tác giả theo ID
   async delete(id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new Error("Invalid author ID");
     }
-    return await this.Author.findByIdAndDelete(id);
+
+    try {
+      // Xóa tất cả các sách có authorId là ID của tác giả
+      await Book.deleteMany({ authorId: id });
+
+      // Xóa tác giả
+      const authorDeletionResult = await this.Author.findByIdAndDelete(id);
+
+      if (!authorDeletionResult) {
+        throw new Error("Không tìm thấy tác giả để xóa");
+      }
+
+      return authorDeletionResult;
+    } catch (error) {
+      throw new Error(
+        "Lỗi khi xóa tác giả và sách liên quan: " + error.message
+      );
+    }
   }
 }
 

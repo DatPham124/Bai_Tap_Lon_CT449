@@ -10,12 +10,8 @@
 
             <div class="mb-3">
                 <label for="authorId" class="form-label">Tác giả</label>
-                <select class="form-control" v-model="book.authorId" id="authorId" required>
-                    <option disabled value="">Chọn tác giả</option>
-                    <option v-for="author in authors" :key="author._id" :value="author._id">
-                        {{ author.AuthorName }}
-                    </option>
-                </select>
+                <v-select v-model="book.authorId" :options="authors" label="AuthorName" :reduce="author => author._id"
+                    placeholder="Chọn hoặc nhập tên tác giả" :filterable="true" @search="fetchAuthors" required />
             </div>
 
             <div class="mb-3">
@@ -25,12 +21,9 @@
 
             <div class="mb-3">
                 <label for="publisherId" class="form-label">Nhà xuất bản</label>
-                <select class="form-control" v-model="book.publisherId" id="publisherId" required>
-                    <option disabled value="">Chọn nhà xuất bản</option>
-                    <option v-for="publisher in publishers" :key="publisher._id" :value="publisher._id">
-                        {{ publisher.publisherName }}
-                    </option>
-                </select>
+                <v-select v-model="book.publisherId" :options="publishers" label="publisherName"
+                    :reduce="publisher => publisher._id" placeholder="Chọn hoặc nhập nhà xuất bản" :filterable="true"
+                    @search="fetchPublishers" required />
             </div>
 
             <div class="mb-3">
@@ -47,9 +40,12 @@
 import BookService from '@/services/book.service';
 import AuthorService from '@/services/author.service';
 import PublisherService from '@/services/publisher.service';
+import vSelect from "vue-select";
+import "vue-select/dist/vue-select.css";
 
 export default {
     name: "EditBook",
+    components: { vSelect },
     data() {
         return {
             book: {
@@ -67,9 +63,7 @@ export default {
         async fetchBook() {
             try {
                 const bookId = this.$route.params.id;
-                console.log("Đây là id truyền qua:", bookId);
                 const response = await BookService.getById(bookId);
-                console.log("Đây là đã tìm được:", response);
                 if (response) {
                     this.book = response; // Gán dữ liệu sách cần chỉnh sửa vào `book`
                 } else {
@@ -82,22 +76,31 @@ export default {
         async updateBook() {
             try {
                 const bookId = this.$route.params.id;
-                await BookService.update(bookId, this.book);
+
+                // Chỉ lấy các _id của author và publisher
+                const bookData = {
+                    ...this.book,
+                    authorId: this.book.authorId._id,
+                    publisherId: this.book.publisherId._id,
+                };
+
+                await BookService.update(bookId, bookData);
                 this.$router.push({ name: 'ListBook', query: { successMessage: 'Sách đã được cập nhật thành công!' } });
             } catch (error) {
                 console.error("Lỗi khi cập nhật sách:", error);
             }
         },
-        async fetchAuthors() {
+
+        async fetchAuthors(searchTerm = "") {
             try {
-                this.authors = await AuthorService.getAll();
+                this.authors = await AuthorService.getAll(searchTerm); // Có thể truyền từ khóa tìm kiếm vào để lọc
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách tác giả:", error);
             }
         },
-        async fetchPublishers() {
+        async fetchPublishers(searchTerm = "") {
             try {
-                this.publishers = await PublisherService.getAll();
+                this.publishers = await PublisherService.getAll(searchTerm); // Có thể truyền từ khóa tìm kiếm vào để lọc
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách nhà xuất bản:", error);
             }

@@ -2,9 +2,14 @@ import { createWebHistory, createRouter } from "vue-router";
 import BorrowBook from "@/views/BorrowBook.vue";
 import RegisterUser from "@/components/auth/RegisterUser.vue";
 import Login from "@/components/auth/Login.vue";
+
 import Book from "@/views/Book.vue";
 import AddBook from "@/components/book/AddBook.vue";
 import EditBook from "@/components/book/EditBook.vue";
+
+import Author from "@/views/Author.vue";
+import AddAuthor from "@/components/author/AddAuthor.vue";
+import EditAuthor from "@/components/author/EditAuthor.vue";
 
 // Hàm kiểm tra token trong localStorage
 function isAuthenticated() {
@@ -23,6 +28,10 @@ const routes = [
   { path: "/login", component: Login },
   { path: "/book/addbook", component: AddBook },
   { path: "/book/edit/:id", name: "EditBook", component: EditBook },
+
+  { path: "/authors", name: "ListAuthor", component: Author },
+  { path: "/authors/add", name: "AddAuthor", component: AddAuthor },
+  { path: "/authors/edit/:id", name: "EditAuthor", component: EditAuthor },
 ];
 
 const router = createRouter({
