@@ -1,4 +1,5 @@
 const User = require("/home/datpham/CT449-Lab/BTL/app/models/User.js");
+const mongoose = require("mongoose"); // Thêm dòng này
 
 class UsersService {
   // Hàm xử lý dữ liệu người dùng
@@ -66,9 +67,16 @@ class UsersService {
       return null;
     }
 
-    const update = this.extractUserData(payload);
-    const result = await User.findByIdAndUpdate(id, update, { new: true });
-    return result;
+    const user = await User.findById(id);
+    if (!user) {
+      return null; // Trả về null nếu không tìm thấy user
+    }
+
+    // Cập nhật các thuộc tính của user
+    Object.assign(user, this.extractUserData(payload));
+
+    // Lưu người dùng sau khi cập nhật
+    return await user.save(); // .save() sẽ kích hoạt pre-save hook để mã hóa mật khẩu nếu có thay đổi
   }
 
   // Xóa người dùng theo ID
