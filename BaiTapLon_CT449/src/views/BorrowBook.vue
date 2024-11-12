@@ -1,5 +1,5 @@
 <script>
-import BorrowList from "@/components/BorrowList.vue";
+import BorrowList from "@/components/borrow/BorrowList.vue";
 
 export default {
     name: "BorrowBook", // Đổi tên component cha

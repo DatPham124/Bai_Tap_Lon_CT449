@@ -23,6 +23,10 @@ class BorrowService {
   async getBorrowsWithDetails(id) {
     return (await this.api.get(`/getBook/${id}`)).data;
   }
+
+  async getBorrowHistoryByUserId(id) {
+    return (await this.api.get("/getBooByUserId/${id}")).data;
+  }
 }
 
 export default new BorrowService();

@@ -1,4 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router";
+
 import BorrowBook from "@/views/BorrowBook.vue";
 import RegisterUser from "@/components/auth/RegisterUser.vue";
 import Login from "@/components/auth/Login.vue";
@@ -19,6 +20,9 @@ import Publisher from "@/views/Publisher.vue";
 import AddPublisher from "@/components/publisher/AddPublisher.vue";
 import EditPublisher from "@/components/publisher/EditPublisher.vue";
 
+import AddBorrow from "@/components/borrow/AddBorrow.vue";
+import EditBorrow from "@/components/borrow/EditBorrow.vue";
+
 // Hàm kiểm tra token trong localStorage
 function isAuthenticated() {
   return !!(localStorage.getItem("token") || sessionStorage.getItem("token"));
@@ -31,19 +35,19 @@ const routes = [
     component: BorrowBook,
     meta: { requiresAuth: true }, // Đánh dấu route này yêu cầu đăng nhập
   },
-  { path: "/books", name: "ListBook", component: Book },
+  { path: "/borrow/add", component: AddBorrow },
+  { path: "/borrow/edit/:id", name: "EditBorrow", component: EditBorrow },
+
   { path: "/register/user", component: RegisterUser },
   { path: "/login", component: Login },
+
+  { path: "/books", name: "ListBook", component: Book },
   { path: "/book/addbook", component: AddBook },
   { path: "/book/edit/:id", name: "EditBook", component: EditBook },
 
   { path: "/authors", name: "ListAuthor", component: Author },
   { path: "/authors/add", name: "AddAuthor", component: AddAuthor },
   { path: "/authors/edit/:id", name: "EditAuthor", component: EditAuthor },
-
-  { path: "/users", name: "ListUser", component: User },
-  { path: "/users/add", name: "AddUser", component: AddUser },
-  { path: "/users/edit/:id", name: "EditUser", component: EditUser },
 
   { path: "/users", name: "ListUser", component: User },
   { path: "/users/add", name: "AddUser", component: AddUser },

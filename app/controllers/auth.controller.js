@@ -61,9 +61,13 @@ exports.login = async (req, res) => {
     }
 
     // Tạo token với thông tin userId và role
-    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, {
-      expiresIn: JWT_EXPIRES_IN,
-    });
+    const token = jwt.sign(
+      { userId: user._id, username: user.name, role: user.role },
+      JWT_SECRET,
+      {
+        expiresIn: JWT_EXPIRES_IN,
+      }
+    );
 
     res.json({ token, role: user.role });
   } catch (err) {

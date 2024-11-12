@@ -8,10 +8,15 @@
                 <input type="text" class="form-control" v-model="book.bookName" id="bookName" required>
             </div>
 
+            <!-- Sử dụng select để liệt kê danh sách tác giả -->
             <div class="mb-3">
                 <label for="authorId" class="form-label">Tác giả</label>
-                <v-select v-model="book.authorId" :options="authors" label="AuthorName" :reduce="author => author._id"
-                    placeholder="Chọn hoặc nhập tên tác giả" :filterable="true" @search="fetchAuthors" required />
+                <select class="form-control" v-model="book.authorId" id="authorId" required>
+                    <option disabled value="">Chọn tác giả</option>
+                    <option v-for="author in authors" :key="author._id" :value="author._id">
+                        {{ author.AuthorName }}
+                    </option>
+                </select>
             </div>
 
             <div class="mb-3">
@@ -21,9 +26,12 @@
 
             <div class="mb-3">
                 <label for="publisherId" class="form-label">Nhà xuất bản</label>
-                <v-select v-model="book.publisherId" :options="publishers" label="publisherName"
-                    :reduce="publisher => publisher._id" placeholder="Chọn hoặc nhập nhà xuất bản" :filterable="true"
-                    @search="fetchPublishers" required />
+                <select class="form-control" v-model="book.publisherId" id="publisherId" required>
+                    <option disabled value="">Chọn nhà xuất bản</option>
+                    <option v-for="publisher in publishers" :key="publisher._id" :value="publisher._id">
+                        {{ publisher.publisherName }}
+                    </option>
+                </select>
             </div>
 
             <div class="mb-3">
@@ -40,12 +48,9 @@
 import BookService from '@/services/book.service';
 import AuthorService from '@/services/author.service';
 import PublisherService from '@/services/publisher.service';
-import vSelect from "vue-select";
-import "vue-select/dist/vue-select.css";
 
 export default {
     name: "EditBook",
-    components: { vSelect },
     data() {
         return {
             book: {
@@ -65,7 +70,11 @@ export default {
                 const bookId = this.$route.params.id;
                 const response = await BookService.getById(bookId);
                 if (response) {
-                    this.book = response; // Gán dữ liệu sách cần chỉnh sửa vào `book`
+                    this.book = {
+                        ...response,
+                        authorId: response.authorId._id, // Gán _id của tác giả
+                        publisherId: response.publisherId._id // Gán _id của nhà xuất bản
+                    };
                 } else {
                     console.error("Không tìm thấy dữ liệu sách");
                 }
@@ -76,31 +85,22 @@ export default {
         async updateBook() {
             try {
                 const bookId = this.$route.params.id;
-
-                // Chỉ lấy các _id của author và publisher
-                const bookData = {
-                    ...this.book,
-                    authorId: this.book.authorId._id,
-                    publisherId: this.book.publisherId._id,
-                };
-
-                await BookService.update(bookId, bookData);
+                await BookService.update(bookId, this.book);
                 this.$router.push({ name: 'ListBook', query: { successMessage: 'Sách đã được cập nhật thành công!' } });
             } catch (error) {
                 console.error("Lỗi khi cập nhật sách:", error);
             }
         },
-
-        async fetchAuthors(searchTerm = "") {
+        async fetchAuthors() {
             try {
-                this.authors = await AuthorService.getAll(searchTerm); // Có thể truyền từ khóa tìm kiếm vào để lọc
+                this.authors = await AuthorService.getAll();
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách tác giả:", error);
             }
         },
-        async fetchPublishers(searchTerm = "") {
+        async fetchPublishers() {
             try {
-                this.publishers = await PublisherService.getAll(searchTerm); // Có thể truyền từ khóa tìm kiếm vào để lọc
+                this.publishers = await PublisherService.getAll();
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách nhà xuất bản:", error);
             }

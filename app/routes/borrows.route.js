@@ -11,4 +11,6 @@ router
   .delete(borrows.delete);
 
 router.route("/getBook/:id").get(borrows.getBorrowsWithDetails);
+router.route("/getBooByUserId/:id").get(borrows.getBorrowHistoryByUserId);
+
 module.exports = router;

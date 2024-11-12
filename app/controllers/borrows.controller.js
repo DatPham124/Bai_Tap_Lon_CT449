@@ -103,15 +103,33 @@ exports.delete = async (req, res, next) => {
 exports.getBorrowsWithDetails = async (req, res, next) => {
   try {
     const borrowService = new BorrowService();
-    const borrows = await borrowService.findWithDetails({}); // Lấy tất cả bản ghi mượn với chi tiết
+    const borrows = await borrowService.findWithDetails({});
 
     if (!borrows || borrows.length === 0) {
       return next(new ApiError(404, "No borrow records found"));
     }
 
-    res.json(borrows); // Trả về dữ liệu chi tiết
+    res.json(borrows);
   } catch (error) {
     console.error("Error retrieving borrows with details:", error.message);
     return next(new ApiError(500, "Error retrieving borrow details"));
+  }
+};
+
+// Controller để lấy lịch sử lượt mượn dựa trên userId
+exports.getBorrowHistoryByUserId = async (req, res, next) => {
+  try {
+    const borrowService = new BorrowService();
+    const userId = req.params.userId;
+    const borrowHistory = await borrowService.findBorrowHistoryByUserId(userId);
+
+    if (!borrowHistory || borrowHistory.length === 0) {
+      return next(new ApiError(404, "No borrow history found for this user"));
+    }
+
+    res.json(borrowHistory);
+  } catch (error) {
+    console.error("Error retrieving borrow history:", error.message);
+    return next(new ApiError(500, "Error retrieving borrow history"));
   }
 };

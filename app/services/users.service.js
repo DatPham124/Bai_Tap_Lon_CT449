@@ -1,6 +1,5 @@
 const User = require("/home/datpham/CT449-Lab/BTL/app/models/User.js");
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 
 class UsersService {
   // Hàm xử lý dữ liệu người dùng
@@ -33,10 +32,7 @@ class UsersService {
     if (existingUser) {
       throw new Error("Số điện thoại hoặc email đã được đăng ký");
     } else {
-      // Băm mật khẩu trước khi
-      console.log("Mật khẩu trước khi băm:", user.password);
-      user.password = await this.hashPassword(user.password);
-      console.log("Mật khẩu sau khi băm:", user.password);
+      // Mật khẩu sẽ tự động băm trong model User (middleware `pre("save")`)
       const newUser = new User(user);
       return await newUser.save();
     }
@@ -69,24 +65,8 @@ class UsersService {
       throw new Error("User not found");
     }
 
-    // In ra mật khẩu cũ và mật khẩu được mã hóa để kiểm tra
-    console.log("Old Password Provided:", oldPassword);
-    console.log("Hashed Password in Database:", user.password);
-
-    return await this.verifyPassword(oldPassword, user.password);
-  }
-
-  // Băm mật khẩu
-  async hashPassword(password) {
-    const salt = await bcrypt.genSalt(10);
-    return await bcrypt.hash(password, salt);
-  }
-
-  // Xác thực mật khẩu
-  async verifyPassword(inputPassword, userPasswordHash) {
-    const isMatch = await bcrypt.compare(inputPassword, userPasswordHash);
-    console.log("Password Match Result:", isMatch);
-    return isMatch;
+    // Sử dụng phương thức comparePassword có sẵn của model User
+    return await user.comparePassword(oldPassword);
   }
 
   // Cập nhật người dùng theo ID
@@ -104,23 +84,19 @@ class UsersService {
 
     // Kiểm tra nếu yêu cầu đổi mật khẩu
     if (updatedData.password) {
-      // Kiểm tra nếu `oldPassword` được cung cấp trong payload
       if (!payload.oldPassword) {
         throw new Error("Vui lòng nhập mật khẩu cũ để đổi mật khẩu mới");
       }
 
-      // Xác thực mật khẩu cũ
-      const isOldPasswordValid = await this.verifyPassword(
-        payload.oldPassword,
-        user.password
+      // Sử dụng phương thức comparePassword để xác thực mật khẩu cũ
+      const isOldPasswordValid = await user.comparePassword(
+        payload.oldPassword
       );
-
       if (!isOldPasswordValid) {
         throw new Error("Mật khẩu cũ không đúng");
       }
 
-      // Băm mật khẩu mới trước khi cập nhật
-      updatedData.password = await this.hashPassword(updatedData.password);
+      // Mật khẩu mới sẽ tự động băm trong `pre("save")` của User model
     }
 
     // Kiểm tra xem email hoặc phone đã được sử dụng bởi người dùng khác chưa
@@ -147,8 +123,7 @@ class UsersService {
       return null;
     }
 
-    const result = await User.findByIdAndDelete(id);
-    return result;
+    return await User.findByIdAndDelete(id);
   }
 }
 

@@ -78,6 +78,50 @@ class BorrowService {
       },
     ]);
   }
+
+  async findBorrowHistoryByUserId(userId) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error("ID người dùng không hợp lệ");
+    }
+
+    return await Borrow.aggregate([
+      { $match: { userId: mongoose.Types.ObjectId(userId) } },
+
+      // Join với collection Books để lấy thông tin sách
+      {
+        $lookup: {
+          from: "Books",
+          localField: "bookId",
+          foreignField: "_id",
+          as: "bookDetails",
+        },
+      },
+      { $unwind: "$bookDetails" },
+
+      // Join với collection Staffs để lấy thông tin nhân viên xử lý
+      {
+        $lookup: {
+          from: "Staffs",
+          localField: "staffId",
+          foreignField: "_id",
+          as: "staffDetails",
+        },
+      },
+      { $unwind: "$staffDetails" },
+
+      // Chỉ chọn các trường cần thiết
+      {
+        $project: {
+          _id: 1,
+          borrowDate: 1,
+          returnDate: 1,
+          returned: 1,
+          "bookDetails.bookName": 1,
+          "staffDetails.name": 1,
+        },
+      },
+    ]);
+  }
 }
 
 module.exports = BorrowService;

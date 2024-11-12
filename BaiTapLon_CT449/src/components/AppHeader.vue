@@ -6,17 +6,18 @@
             </router-link>
 
             <nav class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                <router-link class="nav-link px-2" to="/books">Sách</router-link>
-                <router-link class="nav-link px-2" to="/authors">Tác giả</router-link>
-                <router-link class="nav-link px-2" to="/users">Đọc giả</router-link>
-                <router-link class="nav-link px-2" to="/publishers">Nhà xuất bản</router-link>
+                <router-link class="nav-link px-2" to="/books" v-if="role === 'staff'">Sách</router-link>
+                <router-link class="nav-link px-2" to="/authors" v-if="role === 'staff'">Tác giả</router-link>
+                <router-link class="nav-link px-2" to="/users" v-if="role === 'staff'">Đọc giả</router-link>
+                <router-link class="nav-link px-2" to="/publishers" v-if="role === 'staff'">Nhà xuất bản</router-link>
             </nav>
 
             <div class="col-md-2 text-end">
                 <div v-if="isLoggedIn" class="dropdown">
-                    <img src="https://via.placeholder.com/40" class="rounded-circle dropdown-toggle" id="userMenu"
-                        role="button" data-bs-toggle="dropdown" aria-expanded="false" />
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                    <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Xin chào, {{ username }}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="userMenu">
                         <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li><a class="dropdown-item" href="#" @click="logout">Logout</a></li>
                     </ul>
@@ -28,18 +29,20 @@
                             class="btn btn-primary">Sign-up</button></router-link>
                 </div>
             </div>
-
         </header>
     </div>
 </template>
 
-
 <script>
+import { getUserInfo, getUserRole } from "@/services/auth.service";
+
 export default {
     name: "AppHeader",
     data() {
         return {
             isLoggedIn: !!(localStorage.getItem("token") || sessionStorage.getItem("token")),
+            role: null,
+            username: ""
         };
     },
     methods: {
@@ -47,14 +50,20 @@ export default {
             localStorage.removeItem("token");
             sessionStorage.removeItem("token");
             this.isLoggedIn = false;
+            this.role = null;
             this.$router.push("/login");
         },
-        checkLoginStatus() {
+        async checkLoginStatus() {
             this.isLoggedIn = !!(localStorage.getItem("token") || sessionStorage.getItem("token"));
+            if (this.isLoggedIn) {
+                this.role = getUserRole();
+                const userInfo = await getUserInfo();
+                this.username = userInfo.username;
+            }
         },
     },
     mounted() {
-        // Lắng nghe sự kiện đăng nhập
+        this.checkLoginStatus();
         this.$root.emitter.on("loginStatusChanged", this.checkLoginStatus);
     },
     beforeUnmount() {
@@ -63,55 +72,8 @@ export default {
 };
 </script>
 
-
-
-
-
 <style scoped>
 .custom-link {
     text-decoration: none;
-    /* Xóa gạch chân */
-}
-
-.custom-link:hover {
-    color: #000;
-    /* Hoặc bạn có thể thêm màu khi hover nếu cần */
-}
-
-/* Tùy chỉnh CSS cho header */
-header {
-    background-color: #f8f9fa;
-    /* Thay đổi màu nền của header */
-}
-
-.nav-link {
-    transition: color 0.2s;
-}
-
-.nav-link:hover {
-    color: #0056b3;
-    /* Thay đổi màu khi hover */
-}
-
-.btn-outline-primary {
-    border-color: #007bff;
-    /* Màu viền nút Login */
-}
-
-.btn-outline-primary:hover {
-    background-color: #007bff;
-    /* Màu nền khi hover */
-    color: white;
-    /* Màu chữ khi hover */
-}
-
-.btn-primary {
-    background-color: #007bff;
-    /* Màu nền nút Sign-up */
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    /* Màu nền khi hover */
 }
 </style>
