@@ -22,6 +22,7 @@ import EditPublisher from "@/components/publisher/EditPublisher.vue";
 
 import AddBorrow from "@/components/borrow/AddBorrow.vue";
 import EditBorrow from "@/components/borrow/EditBorrow.vue";
+import UserAddBorrow from "@/components/borrow/UserAddBorrow.vue";
 
 // Hàm kiểm tra token trong localStorage
 function isAuthenticated() {
@@ -36,6 +37,7 @@ const routes = [
     meta: { requiresAuth: true }, // Đánh dấu route này yêu cầu đăng nhập
   },
   { path: "/borrow/add", component: AddBorrow },
+  { path: "/borrow/add/:id", name: "UserAddBorrow", component: UserAddBorrow },
   { path: "/borrow/edit/:id", name: "EditBorrow", component: EditBorrow },
 
   { path: "/register/user", component: RegisterUser },

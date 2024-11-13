@@ -16,7 +16,7 @@ const borrowSchema = new mongoose.Schema(
     staffId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Staffs",
-      required: true,
+      required: false,
     },
     borrowDate: {
       type: Date,

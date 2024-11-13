@@ -98,16 +98,29 @@ class BorrowService {
       },
       { $unwind: "$bookDetails" },
 
-      // Join với collection Staffs để lấy thông tin nhân viên xử lý
+      // Join với collection Staffs để lấy thông tin nhân viên xử lý, nếu không có sẽ trả về null
       {
         $lookup: {
           from: "Staffs",
-          localField: "staffId",
-          foreignField: "_id",
+          let: { staffId: "$staffId" }, // Khai báo biến staffId từ document
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$_id", "$$staffId"] }, // So sánh với staffId
+              },
+            },
+          ],
           as: "staffDetails",
         },
       },
-      { $unwind: "$staffDetails" },
+      // Nếu không có nhân viên thì staffDetails sẽ là mảng rỗng, cần gán null nếu không có dữ liệu
+      {
+        $addFields: {
+          staffDetails: {
+            $ifNull: [{ $arrayElemAt: ["$staffDetails", 0] }, null],
+          },
+        },
+      },
 
       // Chỉ chọn các trường cần thiết
       {

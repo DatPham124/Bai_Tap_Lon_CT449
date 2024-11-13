@@ -18,7 +18,6 @@
                         Xin chào, {{ username }}
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="userMenu">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li><a class="dropdown-item" href="#" @click="logout">Logout</a></li>
                     </ul>
                 </div>

@@ -5,7 +5,7 @@ exports.create = async (req, res, next) => {
   try {
     const { bookId, userId, staffId, borrowDate, returnDate } = req.body;
 
-    if (!bookId || !userId || !staffId || !borrowDate || !returnDate) {
+    if (!bookId || !userId || !borrowDate || !returnDate) {
       return next(new ApiError(400, "All fields are required."));
     }
 

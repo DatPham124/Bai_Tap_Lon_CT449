@@ -8,10 +8,17 @@
 
         <div class="d-flex justify-content-end mb-3">
             <router-link to="/borrow/add">
-                <button class="btn btn-success btn-sm" aria-label="Add Borrow Entry">
+                <button v-if='role === "staff"' class="btn btn-success btn-sm" aria-label="Add Borrow Entry">
                     <i class="fas fa-plus"></i> Thêm lượt mượn sách
                 </button>
             </router-link>
+
+            <button @click=UserAddBorrow(userId) v-if='role === "user"' class="btn btn-success btn-sm"
+                aria-label="Add Borrow Entry">
+                <i class="fas fa-plus"></i> Thêm lượt mượn sách
+            </button>
+
+
         </div>
 
         <div v-if="borrows && borrows.length">
@@ -59,10 +66,23 @@
                         <td>{{ new Date(borrow.borrowDate).toLocaleDateString() }}</td>
                         <td>{{ new Date(borrow.returnDate).toLocaleDateString() }}</td>
                         <td>
-                            <button class="btn btn-sm btn-primary me-2" @click="editBorrow(borrow._id)"
-                                aria-label="Edit Borrow">Sửa</button>
-                            <button class="btn btn-sm btn-danger" @click="deleteBorrow(borrow._id)"
-                                aria-label="Delete Borrow">Xóa</button>
+
+
+
+                            <div v-if='borrow.returned'>
+                                <p class="text-success">Đã trả</p>
+                            </div>
+
+
+
+                            <div v-else-if="!borrow.returned && !borrow.staffDetails">
+                                <p class="text-warning">Chờ duyệt</p>
+                            </div>
+
+                            <div v-else-if="!borrow.returned">
+                                <p class="text-danger">Chưa trả</p>
+                            </div>
+
                         </td>
                     </tr>
                 </tbody>
@@ -92,7 +112,8 @@ export default {
             borrows: [],
             borrowDetails: null,
             successMessage: '', // Initialize as empty
-            role: ''
+            role: '',
+            userId: '',
         };
     },
     async created() {
@@ -138,6 +159,10 @@ export default {
         },
         editBorrow(id) {
             this.$router.push({ name: 'EditBorrow', params: { id } });
+        },
+
+        UserAddBorrow(id) {
+            this.$router.push({ name: 'UserAddBorrow', params: { id } });
         },
     },
 };
