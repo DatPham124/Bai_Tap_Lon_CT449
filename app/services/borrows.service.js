@@ -85,7 +85,7 @@ class BorrowService {
     }
 
     return await Borrow.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(userId) } },
+      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
 
       // Join với collection Books để lấy thông tin sách
       {

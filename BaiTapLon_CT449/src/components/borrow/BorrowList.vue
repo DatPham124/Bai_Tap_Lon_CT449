@@ -15,7 +15,8 @@
         </div>
 
         <div v-if="borrows && borrows.length">
-            <table class="table table-striped">
+
+            <table class="table table-striped" v-if="role === 'staff'">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -30,6 +31,32 @@
                         <th scope="row">{{ index + 1 }}</th>
                         <td>{{ borrow.userDetails.name }}</td>
                         <td>{{ borrow.bookDetails.bookName }}</td>
+                        <td>{{ new Date(borrow.returnDate).toLocaleDateString() }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary me-2" @click="editBorrow(borrow._id)"
+                                aria-label="Edit Borrow">Sửa</button>
+                            <button class="btn btn-sm btn-danger" @click="deleteBorrow(borrow._id)"
+                                aria-label="Delete Borrow">Xóa</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-striped" v-else-if="role === 'user'">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Tên sách</th>
+                        <th scope="col">Ngày mượn</th>
+                        <th scope="col">Hạn trả</th>
+                        <th scope="col">Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(borrow, index) in borrows" :key="borrow._id">
+                        <th scope="row">{{ index + 1 }}</th>
+                        <td>{{ borrow.bookDetails.bookName }}</td>
+                        <td>{{ new Date(borrow.borrowDate).toLocaleDateString() }}</td>
                         <td>{{ new Date(borrow.returnDate).toLocaleDateString() }}</td>
                         <td>
                             <button class="btn btn-sm btn-primary me-2" @click="editBorrow(borrow._id)"

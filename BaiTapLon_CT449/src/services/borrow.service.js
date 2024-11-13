@@ -25,7 +25,7 @@ class BorrowService {
   }
 
   async getBorrowHistoryByUserId(id) {
-    return (await this.api.get("/getBooByUserId/${id}")).data;
+    return (await this.api.get(`/${id}/history`)).data;
   }
 }
 

@@ -120,7 +120,7 @@ exports.getBorrowsWithDetails = async (req, res, next) => {
 exports.getBorrowHistoryByUserId = async (req, res, next) => {
   try {
     const borrowService = new BorrowService();
-    const userId = req.params.userId;
+    const userId = req.params.id;
     const borrowHistory = await borrowService.findBorrowHistoryByUserId(userId);
 
     if (!borrowHistory || borrowHistory.length === 0) {
