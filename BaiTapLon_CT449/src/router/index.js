@@ -41,7 +41,7 @@ const routes = [
   { path: "/borrow/edit/:id", name: "EditBorrow", component: EditBorrow },
 
   { path: "/register/user", component: RegisterUser },
-  { path: "/login", component: Login },
+  { path: "/login", name: "login", component: Login },
 
   { path: "/books", name: "ListBook", component: Book },
   { path: "/book/addbook", component: AddBook },

@@ -73,12 +73,6 @@
                                 <p class="text-success">Đã trả</p>
                             </div>
 
-
-
-                            <div v-else-if="!borrow.returned && !borrow.staffDetails">
-                                <p class="text-warning">Chờ duyệt</p>
-                            </div>
-
                             <div v-else-if="!borrow.returned">
                                 <p class="text-danger">Chưa trả</p>
                             </div>

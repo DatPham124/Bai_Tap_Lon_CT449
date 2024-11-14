@@ -63,7 +63,12 @@ class BorrowService {
           as: "staffDetails",
         },
       },
-      { $unwind: "$staffDetails" },
+      {
+        $unwind: {
+          path: "$staffDetails",
+          preserveNullAndEmptyArrays: true, // Đặt staffDetails là null nếu không có staffId
+        },
+      },
 
       // Chỉ chọn các trường cần thiết
       {

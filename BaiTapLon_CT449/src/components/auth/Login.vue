@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="text-center">
-                    <p>Not a member? <router-link to="/register">Register</router-link></p>
+                    <p>Not a member? <router-link to="/register/user">Register</router-link></p>
                 </div>
 
                 <!-- Submit button -->
