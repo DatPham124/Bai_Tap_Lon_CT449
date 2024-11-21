@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const staffSchema = new mongoose.Schema(
   {
@@ -9,7 +8,6 @@ const staffSchema = new mongoose.Schema(
     address: String,
     email: String,
     password: String,
-    staffId: { type: Number, unique: true },
     role: { type: String, default: "staff" },
   },
   { collection: "Staffs" }
@@ -32,8 +30,5 @@ staffSchema.methods.comparePassword = async function (password) {
     return false;
   }
 };
-
-// Tự động tăng giá trị cho staffId
-staffSchema.plugin(AutoIncrement, { inc_field: "staffId" });
 
 module.exports = mongoose.model("Staff", staffSchema);

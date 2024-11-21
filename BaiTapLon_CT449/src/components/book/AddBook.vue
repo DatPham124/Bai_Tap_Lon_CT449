@@ -68,7 +68,7 @@ export default {
         async addBook() {
             try {
                 await BookService.create(this.book);
-                this.$router.push({ name: 'BorrowList', query: { successMessage: 'Sách đã được thêm thành công!' } });
+                this.$router.push({ name: 'ListBook', query: { successMessage: 'Sách đã được thêm thành công!' } });
             } catch (error) {
                 console.error("Lỗi khi thêm sách:", error);
             }
