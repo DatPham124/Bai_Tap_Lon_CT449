@@ -8,7 +8,7 @@
             <nav class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <router-link class="nav-link px-2" to="/books" v-if="role === 'staff'">Sách</router-link>
                 <router-link class="nav-link px-2" to="/authors" v-if="role === 'staff'">Tác giả</router-link>
-                <router-link class="nav-link px-2" to="/users" v-if="role === 'staff'">Đọc giả</router-link>
+                <router-link class="nav-link px-2" to="/users" v-if="role === 'staff'">Độc giả</router-link>
                 <router-link class="nav-link px-2" to="/publishers" v-if="role === 'staff'">Nhà xuất bản</router-link>
             </nav>
 

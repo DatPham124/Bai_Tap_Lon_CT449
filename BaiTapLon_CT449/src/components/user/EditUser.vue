@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2 class="text-center">Chỉnh sửa đọc giả</h2>
+        <h2 class="text-center">Chỉnh sửa độc giả</h2>
 
         <!-- Hiển thị lỗi nếu có -->
         <div v-if="errorMessage" class="alert alert-danger">
@@ -9,7 +9,7 @@
 
         <form @submit.prevent="updateUser">
             <div class="mb-3">
-                <label for="name" class="form-label">Tên đọc giả</label>
+                <label for="name" class="form-label">Tên độc giả</label>
                 <input type="text" class="form-control" v-model="user.name" id="name" required>
             </div>
             <div class="mb-3">
@@ -37,7 +37,7 @@
                 <input type="password" class="form-control" v-model="newPassword" id="newPassword">
             </div>
 
-            <button type="submit" class="btn btn-primary">Cập nhật đọc giả</button>
+            <button type="submit" class="btn btn-primary">Cập nhật độc giả</button>
         </form>
     </div>
 </template>
@@ -68,11 +68,11 @@ export default {
                 if (response) {
                     this.user = response;
                 } else {
-                    this.errorMessage = "Không tìm thấy dữ liệu đọc giả";
+                    this.errorMessage = "Không tìm thấy dữ liệu độc giả";
                 }
             } catch (error) {
-                this.errorMessage = "Lỗi khi lấy thông tin đọc giả";
-                console.error("Lỗi khi lấy thông tin đọc giả:", error);
+                this.errorMessage = "Lỗi khi lấy thông tin độc giả";
+                console.error("Lỗi khi lấy thông tin độc giả:", error);
             }
         },
         async updateUser() {
@@ -98,14 +98,14 @@ export default {
                 await userService.update(userId, updateData);
 
                 // Điều hướng về trang danh sách với thông báo thành công
-                this.$router.push({ name: 'ListUser', query: { successMessage: 'Đọc giả đã được cập nhật thành công!' } });
+                this.$router.push({ name: 'ListUser', query: { successMessage: 'độc giả đã được cập nhật thành công!' } });
             } catch (error) {
                 // Kiểm tra lỗi trả về từ backend và hiển thị thông báo
                 if (error.response && error.response.data && error.response.data.message) {
                     this.errorMessage = error.response.data.message;
                 } else {
-                    this.errorMessage = "Lỗi không xác định khi cập nhật đọc giả";
-                    console.error("Lỗi khi cập nhật đọc giả:", error);
+                    this.errorMessage = "Lỗi không xác định khi cập nhật độc giả";
+                    console.error("Lỗi khi cập nhật độc giả:", error);
                 }
             }
         }

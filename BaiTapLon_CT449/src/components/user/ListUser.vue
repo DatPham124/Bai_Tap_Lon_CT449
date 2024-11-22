@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2 class="text-center">Quản lý Đọc giả</h2>
+        <h2 class="text-center">Quản lý độc giả</h2>
 
         <div v-if="successMessage" class="alert alert-success">
             {{ successMessage }}
@@ -9,7 +9,7 @@
         <div class="d-flex justify-content-end mb-3">
             <router-link to="/users/add">
                 <button class="btn btn-success btn-sm">
-                    <i class="fas fa-plus"></i> Thêm đọc giả
+                    <i class="fas fa-plus"></i> Thêm độc giả
                 </button>
             </router-link>
         </div>
@@ -19,7 +19,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Tên đọc giả</th>
+                        <th scope="col">Tên độc giả</th>
                         <th scope="col">Số điện thoại</th>
                         <th scope="col">Địa chỉ</th>
                         <th scope="col">Email</th>
@@ -42,7 +42,7 @@
             </table>
         </div>
         <div v-else>
-            <p class="text-center">Không có đọc giả nào để hiển thị.</p>
+            <p class="text-center">Không có độc giả nào để hiển thị.</p>
         </div>
     </div>
 </template>
@@ -73,19 +73,19 @@ export default {
             try {
                 this.users = await userService.getAll();
             } catch (error) {
-                console.error("Lỗi khi lấy danh sách đọc giả:", error);
+                console.error("Lỗi khi lấy danh sách độc giả:", error);
             }
         },
         editUser(id) {
             this.$router.push({ name: 'EditUser', params: { id: id } });
         },
         async deleteUser(id) {
-            if (confirm("Xóa đọc giả sẽ xóa lịch sử mược sách của đoc giả đó. Bạn có chắc chắn ?")) {
+            if (confirm("Xóa độc giả sẽ xóa lịch sử mược sách của đoc giả đó. Bạn có chắc chắn ?")) {
                 try {
                     await userService.delete(id);
                     this.users = this.users.filter(user => user._id !== id);
                 } catch (error) {
-                    console.error("Lỗi khi xóa đọc giả:", error);
+                    console.error("Lỗi khi xóa độc giả:", error);
                 }
             }
         }

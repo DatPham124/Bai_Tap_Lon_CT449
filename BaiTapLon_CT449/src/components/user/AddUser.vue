@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2 class="text-center">Thêm đọc giả mới</h2>
+        <h2 class="text-center">Thêm độc giả mới</h2>
         <!-- Hiển thị thông báo lỗi nếu có -->
         <div v-if="errorMessage" class="alert alert-danger mt-3">
             {{ errorMessage }}
@@ -8,7 +8,7 @@
 
         <form @submit.prevent="addUser">
             <div class="mb-3">
-                <label for="name" class="form-label">Tên đọc giả</label>
+                <label for="name" class="form-label">Tên độc giả</label>
                 <input type="text" class="form-control" v-model="user.name" id="name" required />
             </div>
             <div class="mb-3">
@@ -28,7 +28,7 @@
                 <input type="text" class="form-control" v-model="user.password" id="password" required />
             </div>
 
-            <button type="submit" class="btn btn-success">Thêm đọc giả</button>
+            <button type="submit" class="btn btn-success">Thêm độc giả</button>
         </form>
     </div>
 </template>
@@ -53,22 +53,22 @@ export default {
     methods: {
         async addUser() {
             try {
-                // Gọi API để tạo đọc giả mới
+                // Gọi API để tạo độc giả mới
                 await userService.create(this.user);
                 // Chuyển hướng và hiển thị thông báo thành công
                 this.$router.push({
                     name: "ListUser",
-                    query: { successMessage: "Đọc giả đã được thêm thành công!" },
+                    query: { successMessage: "độc giả đã được thêm thành công!" },
                 });
             } catch (error) {
                 // Kiểm tra nếu có lỗi trả về từ backend
                 if (error.response && error.response.data) {
-                    this.errorMessage = error.response.data.message || "Đọc giả này đã tồn tại";
+                    this.errorMessage = error.response.data.message || "độc giả này đã tồn tại";
                 } else {
                     this.errorMessage = "Có lỗi xảy ra, vui lòng thử lại sau."; // Lỗi tổng quát nếu không nhận được thông báo lỗi từ backend
                 }
 
-                console.error("Lỗi khi thêm đọc giả:", error);
+                console.error("Lỗi khi thêm độc giả:", error);
             }
         },
     },
